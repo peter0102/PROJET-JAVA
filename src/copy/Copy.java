@@ -29,8 +29,8 @@ public class Copy {
         }
         CC(a, i+1, lvl, dir);
     }
-    public static void main(String[] args) throws FileNotFoundException {
-        File dir = new File("C:\\Users\\LINPa\\Documents\\test");
+    public static void main(String name) throws FileNotFoundException {
+        File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
         if (dir.exists() && dir.isDirectory()) {
             File[] a = dir.listFiles();
             Copy c = new Copy();
@@ -39,6 +39,9 @@ public class Copy {
                 newDir.mkdir();
             }
             c.CC(a, 0, 0, newDir);
+        }
+        else {
+            System.out.println("Directory does not exist");
         }
     }
 }
