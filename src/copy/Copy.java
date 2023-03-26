@@ -1,8 +1,14 @@
 package copy;
 import java.io.*;
-public class Copy {
+public class Copy implements Runnable {
+    private String name;
+
+    public Copy(String name) {
+        this.name = name;
+    }
+
     public void CC(File[] a, int i, int lvl, File dir) throws FileNotFoundException {
-        if (i==a.length) {
+        if (i == a.length) {
             return;
         }
         if (a[i].isFile()) {
@@ -25,23 +31,90 @@ public class Copy {
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
-            CC(a[i].listFiles(), 0, lvl+1, newDir);
+            CC(a[i].listFiles(), 0, lvl + 1, newDir);
         }
-        CC(a, i+1, lvl, dir);
+        CC(a, i + 1, lvl, dir);
     }
-    public static void main(String name) throws FileNotFoundException {
+
+    public void delete(File[] a, File[] b) {
+        if (a == null || b == null) {
+            return;
+        }
+        if (a.length < b.length) {
+            for (File filea : a) {
+                Boolean found=false;
+                for (File fileb : b) {
+                    if (fileb.getName().equals(filea.getName())) {
+                        found = true;
+                        break;
+                    }
+                    if (!found);
+                    fileb.delete();
+                }
+            }
+        }
+    }
+
+    public boolean check(File[] a, File[] b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.length != b.length) {
+            return false;
+        }
+        for (int i=0; i<a.length;i++) {
+            if (a[i].isDirectory() && b[i].isDirectory()) {
+                if (!check(a[i].listFiles(), b[i].listFiles())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void run() {
         File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
         if (dir.exists() && dir.isDirectory()) {
             File[] a = dir.listFiles();
-            Copy c = new Copy();
+            Copy c = new Copy(name);
             File newDir = new File("C:\\Users\\LINPa\\Documents\\" + dir.getName() + "_copy");
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
-            c.CC(a, 0, 0, newDir);
+            try {
+                c.CC(a, 0, 0, newDir);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            while (true) {
+                File[] newA = dir.listFiles();
+                if (check(a, newA) == false) {
+                    try {
+                        c.CC(newA, 0, 0, newDir);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (!dir.exists()) {
+                    System.out.println("Source folder deleted. Exiting loop.");
+                    break;
+                }
+                if (!newDir.exists()) {
+                    System.out.println("Destination folder deleted. Exiting loop.");
+                    break;
+                }
+            }
         }
-        else {
-            System.out.println("Directory does not exist");
-        }
+    }
+
+    public static void main(String[] args) {
+        Copy c = new Copy("test");
+        Thread t = new Thread(c);
+        t.start();
     }
 }
