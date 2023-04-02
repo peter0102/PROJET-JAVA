@@ -1,5 +1,6 @@
 package copy;
 import java.io.*;
+import java.nio.file.*;
 public class Copy implements Runnable {
     private String name;
 
@@ -13,15 +14,9 @@ public class Copy implements Runnable {
         }
         if (a[i].isFile()) {
             try {
-                FileInputStream in = new FileInputStream(a[i].getPath());
-                FileOutputStream out = new FileOutputStream(dir.getPath() + "\\" + a[i].getName());
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = in.read(buffer)) > 0) {
-                    out.write(buffer, 0, length);
-                }
-                in.close();
-                out.close();
+                Path source = Paths.get(a[i].getPath());
+                Path destination = Paths.get(dir.getPath() + "\\" + a[i].getName());
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -35,20 +30,28 @@ public class Copy implements Runnable {
         }
         CC(a, i + 1, lvl, dir);
     }
-
-    public void delete(File[] a, File[] b) {
+    public void delete(File[] a, File[] b) { //supprime dans b ce qu'il n'y a pas dans a
         if (a == null || b == null) {
             return;
         }
-        if (a.length < b.length) {
+        for (File fileb : b) {
+            Boolean found = false;
             for (File filea : a) {
-                Boolean found=false;
-                for (File fileb : b) {
-                    if (fileb.getName().equals(filea.getName())) {
-                        found = true;
-                        break;
+                if (filea.getName().equals(fileb.getName())) {
+                    found = true;
+                    if (filea.isDirectory() && fileb.isDirectory()) {
+                        delete(filea.listFiles(), fileb.listFiles());
                     }
-                    if (!found);
+                }
+            }
+            if (!found) {
+                if (fileb.isDirectory()) {
+                    File[] filesToDelete = fileb.listFiles();
+                    for (File file : filesToDelete) {
+                        file.delete();
+                    }
+                    fileb.delete();
+                } else {
                     fileb.delete();
                 }
             }
@@ -87,16 +90,11 @@ public class Copy implements Runnable {
                 e.printStackTrace();
             }
             while (true) {
-                File[] newA = dir.listFiles();
-                if (check(a, newA) == false) {
-                    try {
-                        c.CC(newA, 0, 0, newDir);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
+                File[] refreshedA = dir.listFiles();
+                File[] refreshedB = newDir.listFiles();
+                        delete(refreshedA, refreshedB);
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
