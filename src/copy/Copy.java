@@ -1,6 +1,8 @@
 package copy;
 import java.io.*;
 import java.nio.file.*;
+import java.time.*;
+import java.nio.file.attribute.BasicFileAttributes;
 public class Copy implements Runnable {
     private String name;
 
@@ -58,22 +60,68 @@ public class Copy implements Runnable {
         }
     }
 
-    public boolean check(File[] a, File[] b) {
+    public int check(File[] a, File[] b) {
         if (a == null || b == null) {
-            return false;
+            return 0;
         }
-        if (a.length != b.length) {
-            return false;
-        }
-        for (int i=0; i<a.length;i++) {
-            if (a[i].isDirectory() && b[i].isDirectory()) {
-                if (!check(a[i].listFiles(), b[i].listFiles())) {
-                    return false;
+        if (a.length == b.length) { // modification fichier
+            for (int i=0; i<a.length; i++) {
+                if (a[i].isFile() && b[i].isFile()) {
+                    if (a[i].lastModified() != b[i].lastModified()) {
+                        if (a[i].lastModified()>b[i].lastModified()) {
+                            return 1; //a est plus récent, on copie a dans b
+                        } else {
+                            return -1; //b est plus récent, on copie b dans a
+                        }
+                    }
+                else if (a[i].isDirectory() && b[i].isDirectory()) {
+                    int result = check(a[i].listFiles(), b[i].listFiles());
+                    return result;
+                    }
                 }
             }
         }
-        return true;
+        if (a.length > b.length) { // on regarde dans a s'il y a du changement
+            for (File filea : a) {
+                Path filePath = filea.toPath();
+                try {
+                    BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
+                    Instant lastAccessTime = attrs.lastAccessTime().toInstant();
+                    LocalDateTime lastAccessDateTime = LocalDateTime.ofInstant(lastAccessTime, ZoneId.systemDefault());
+                    if (lastAccessDateTime.isAfter(LocalDateTime.now().minusSeconds(1))) {
+                        return 2; //addition de fichier dans a, on copie a dans b
+                    }
+                    else {
+                        return -2; //supression de fichier dans b, on supprime dans a
+                    }
+                } 
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (b.length > a.length) { // on regarde dans b s'il y a du changement
+            for (File fileb : b) {
+                Path filePath = fileb.toPath();
+                try {
+                    BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
+                    Instant lastAccessTime = attrs.lastAccessTime().toInstant();
+                    LocalDateTime lastAccessDateTime = LocalDateTime.ofInstant(lastAccessTime, ZoneId.systemDefault());
+                    if (lastAccessDateTime.isAfter(LocalDateTime.now().minusSeconds(1))) {
+                        return 3; //addition de fichier dans b, on copie b dans a
+                    }
+                    else {
+                        return -3; //supression de fichier dans a, on supprime dans b
+                    }
+                } 
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return 0;
     }
+    
 
     public void run() {
         File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
@@ -84,7 +132,7 @@ public class Copy implements Runnable {
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
-            try {
+            try { //1ère copie du dossier source vers le dossier destination
                 c.CC(a, 0, 0, newDir);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -92,7 +140,37 @@ public class Copy implements Runnable {
             while (true) {
                 File[] refreshedA = dir.listFiles();
                 File[] refreshedB = newDir.listFiles();
-                delete(refreshedA, refreshedB);
+                int result = check(refreshedA, refreshedB);
+                switch(result) {
+                    case 1: try {
+                                c.CC(refreshedA, 0, 0, newDir);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    case -1: try {
+                                c.CC(refreshedB, 0, 0, dir);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    case 2: try {
+                                c.CC(refreshedA, 0, 0, newDir);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    case -2: delete(refreshedB, refreshedA);
+                            break;
+                    case 3: try {
+                                c.CC(refreshedB, 0, 0, dir);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    case -3: delete(refreshedA, refreshedB);
+                            break;
+                }
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
