@@ -92,7 +92,7 @@ public class Copy implements Runnable {
             while (true) {
                 File[] refreshedA = dir.listFiles();
                 File[] refreshedB = newDir.listFiles();
-                        delete(refreshedA, refreshedB);
+                delete(refreshedA, refreshedB);
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
