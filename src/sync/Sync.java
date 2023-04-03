@@ -139,21 +139,22 @@ public class Sync implements Runnable {
             }
         }
         if (a.length == b.length) { //modification fichier
-            for (int i=0; i<a.length; i++) {
+            int result = 0;
+            for (int i = 0; i < a.length; i++) {
                 if (a[i].isFile() && b[i].isFile()) {
                     if (a[i].lastModified() != b[i].lastModified()) {
-                        if (a[i].lastModified()>b[i].lastModified()) {
+                        if (a[i].lastModified() > b[i].lastModified()) {
                             return 3; //a est plus récent, on copie a dans b
                         } else {
                             return -3; //b est plus récent, on copie b dans a
                         }
                     }
-                else if (a[i].isDirectory() && b[i].isDirectory()) {
-                    int result = check(a[i].listFiles(), b[i].listFiles());
-                    return result;
-                    }
+                } else if (a[i].isDirectory() && b[i].isDirectory()) {
+                    int subResult = check(a[i].listFiles(), b[i].listFiles());
+                    result += subResult;
                 }
             }
+            return result;
         }
         return 0;
     }
