@@ -1,12 +1,10 @@
-package copy;
+package sync;
 import java.io.*;
 import java.nio.file.*;
-import java.time.*;
-import java.nio.file.attribute.BasicFileAttributes;
-public class Copy implements Runnable {
+public class Sync implements Runnable {
     private String name;
 
-    public Copy(String name) {
+    public Sync(String name) {
         this.name = name;
     }
 
@@ -59,7 +57,7 @@ public class Copy implements Runnable {
             }
         }
     }
-
+/*
     public int check(File[] a, File[] b) {
         if (a == null || b == null) {
             return 0;
@@ -120,14 +118,50 @@ public class Copy implements Runnable {
             }
         }
         return 0;
-    }
+    } */
     
-
+    public int check(File[] a, File[] b) {
+        if (a == null || b == null) {
+            return 0;
+        }
+        if (a.length > b.length) { //addition dans a ou supression dans b, on compare date modification dossier a et b
+            if (a[0].getParentFile().lastModified() > b[0].getParentFile().lastModified()) {
+                return 1; //addition de fichier dans a, on copie a dans b
+            } else {
+                return -1; //supression de fichier dans b, on supprime dans a
+            }
+        }
+        if (b.length > a.length) { //addition dans b ou supression dans a, on compare date modification dossier a et b
+            if (b[0].getParentFile().lastModified() > a[0].getParentFile().lastModified()) {
+                return 2; //addition de fichier dans b, on copie b dans a
+            } else {
+                return -2; //supression de fichier dans a, on supprime dans b
+            }
+        }
+        if (a.length == b.length) { //modification fichier
+            for (int i=0; i<a.length; i++) {
+                if (a[i].isFile() && b[i].isFile()) {
+                    if (a[i].lastModified() != b[i].lastModified()) {
+                        if (a[i].lastModified()>b[i].lastModified()) {
+                            return 3; //a est plus récent, on copie a dans b
+                        } else {
+                            return -3; //b est plus récent, on copie b dans a
+                        }
+                    }
+                else if (a[i].isDirectory() && b[i].isDirectory()) {
+                    int result = check(a[i].listFiles(), b[i].listFiles());
+                    return result;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
     public void run() {
         File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
         if (dir.exists() && dir.isDirectory()) {
             File[] a = dir.listFiles();
-            Copy c = new Copy(name);
+            Sync c = new Sync(name);
             File newDir = new File("C:\\Users\\LINPa\\Documents\\" + dir.getName() + "_copy");
             if (!newDir.exists()) {
                 newDir.mkdir();
@@ -141,36 +175,37 @@ public class Copy implements Runnable {
                 File[] refreshedA = dir.listFiles();
                 File[] refreshedB = newDir.listFiles();
                 int result = check(refreshedA, refreshedB);
-                switch(result) {
+                switch (result) {
                     case 1: try {
-                                c.CC(refreshedA, 0, 0, newDir);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    case -1: try {
-                                c.CC(refreshedB, 0, 0, dir);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            break;
+                            c.CC(refreshedA, 0, 0, newDir);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case -1: delete(refreshedB,refreshedA);
+                        break;
                     case 2: try {
-                                c.CC(refreshedA, 0, 0, newDir);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    case -2: delete(refreshedB, refreshedA);
-                            break;
+                            c.CC(refreshedB, 0, 0, dir);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case -2: delete(refreshedA,refreshedB);
+                        break;
                     case 3: try {
-                                c.CC(refreshedB, 0, 0, dir);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    case -3: delete(refreshedA, refreshedB);
-                            break;
+                            c.CC(refreshedA, 0, 0, newDir);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case -3: try {
+                            c.CC(refreshedB, 0, 0, dir);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
+
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -189,7 +224,7 @@ public class Copy implements Runnable {
     }
 
     public static void main(String[] args) {
-        Copy c = new Copy("test");
+        Sync c = new Sync("test");
         Thread t = new Thread(c);
         t.start();
     }
