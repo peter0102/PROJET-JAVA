@@ -121,8 +121,14 @@ public class Sync implements Runnable {
     } */
     
     public int check(File[] a, File[] b) {
-        if (a == null || b == null) {
+        if (a == null && b == null) {
             return 0;
+        }
+        if (a==null || a.length==0) {
+            return 2;
+        }
+        if (b==null || b.length==0) {
+            return 1;
         }
         if (a.length > b.length) { //addition dans a ou supression dans b, on compare date modification dossier a et b
             if (a[0].getParentFile().lastModified() > b[0].getParentFile().lastModified()) {
@@ -138,7 +144,7 @@ public class Sync implements Runnable {
                 return -2; //supression de fichier dans a, on supprime dans b
             }
         }
-        if (a.length == b.length) { //modification fichier
+        if (a.length == b.length) { //modification fichier ou dans sous dossiers
             int result = 0;
             for (int i = 0; i < a.length; i++) {
                 if (a[i].isFile() && b[i].isFile()) {
