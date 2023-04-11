@@ -3,9 +3,10 @@ import java.io.*;
 import java.nio.file.*;
 public class Sync implements Runnable {
     private String name;
-
+    private static boolean isActive;
     public Sync(String name) {
         this.name = name;
+        this.isActive=true;
     }
 
     public void CC(File[] a, int i, int lvl, File dir) throws FileNotFoundException {
@@ -57,69 +58,6 @@ public class Sync implements Runnable {
             }
         }
     }
-/*
-    public int check(File[] a, File[] b) {
-        if (a == null || b == null) {
-            return 0;
-        }
-        if (a.length == b.length) { // modification fichier
-            for (int i=0; i<a.length; i++) {
-                if (a[i].isFile() && b[i].isFile()) {
-                    if (a[i].lastModified() != b[i].lastModified()) {
-                        if (a[i].lastModified()>b[i].lastModified()) {
-                            return 1; //a est plus récent, on copie a dans b
-                        } else {
-                            return -1; //b est plus récent, on copie b dans a
-                        }
-                    }
-                else if (a[i].isDirectory() && b[i].isDirectory()) {
-                    int result = check(a[i].listFiles(), b[i].listFiles());
-                    return result;
-                    }
-                }
-            }
-        }
-        if (a.length > b.length) { // on regarde dans a s'il y a du changement
-            for (File filea : a) {
-                Path filePath = filea.toPath();
-                try {
-                    BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
-                    Instant lastAccessTime = attrs.lastAccessTime().toInstant();
-                    LocalDateTime lastAccessDateTime = LocalDateTime.ofInstant(lastAccessTime, ZoneId.systemDefault());
-                    if (lastAccessDateTime.isAfter(LocalDateTime.now().minusSeconds(1))) {
-                        return 2; //addition de fichier dans a, on copie a dans b
-                    }
-                    else {
-                        return -2; //supression de fichier dans b, on supprime dans a
-                    }
-                } 
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        if (b.length > a.length) { // on regarde dans b s'il y a du changement
-            for (File fileb : b) {
-                Path filePath = fileb.toPath();
-                try {
-                    BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
-                    Instant lastAccessTime = attrs.lastAccessTime().toInstant();
-                    LocalDateTime lastAccessDateTime = LocalDateTime.ofInstant(lastAccessTime, ZoneId.systemDefault());
-                    if (lastAccessDateTime.isAfter(LocalDateTime.now().minusSeconds(1))) {
-                        return 3; //addition de fichier dans b, on copie b dans a
-                    }
-                    else {
-                        return -3; //supression de fichier dans a, on supprime dans b
-                    }
-                } 
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return 0;
-    } */
-    
     public int check(File x, File y) {
         File[] a=x.listFiles();
         File []b=y.listFiles();
@@ -174,6 +112,9 @@ public class Sync implements Runnable {
         }
         return 0;
     }
+    public static void stopSync() {
+        isActive = false;
+    }
     public void run() {
         File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
         if (dir.exists() && dir.isDirectory()) {
@@ -188,7 +129,7 @@ public class Sync implements Runnable {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            while (true) {
+            while (isActive) {
                 File[] refreshedA = dir.listFiles();
                 File[] refreshedB = newDir.listFiles();
                 int result = check(dir, newDir);
@@ -235,6 +176,9 @@ public class Sync implements Runnable {
                 if (!newDir.exists()) {
                     System.out.println("Destination folder deleted. Exiting loop.");
                     break;
+                }
+                if (!isActive) {
+                	break;
                 }
             }
         }
