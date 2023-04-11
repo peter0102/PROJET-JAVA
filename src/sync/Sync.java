@@ -120,15 +120,25 @@ public class Sync implements Runnable {
         return 0;
     } */
     
-    public int check(File[] a, File[] b) {
-        if (a == null && b == null) {
+    public int check(File x, File y) {
+        File[] a=x.listFiles();
+        File []b=y.listFiles();
+        if (a == null && b == null || a.length == 0 && b.length == 0) {
             return 0;
         }
         if (a==null || a.length==0) {
-            return 2;
+            if (b[0].getParentFile().lastModified() > x.lastModified()) {
+                return 2; //addition de fichier dans b, on copie b dans a
+            } else {
+                return -2; //supression de fichier dans a, on supprime dans b
+            }
         }
         if (b==null || b.length==0) {
-            return 1;
+            if (a[0].getParentFile().lastModified() > y.lastModified()) {
+                return 1; //addition de fichier dans a, on copie a dans b
+            } else {
+                return -1; //supression de fichier dans b, on supprime dans a
+            }
         }
         if (a.length > b.length) { //addition dans a ou supression dans b, on compare date modification dossier a et b
             if (a[0].getParentFile().lastModified() > b[0].getParentFile().lastModified()) {
@@ -156,7 +166,7 @@ public class Sync implements Runnable {
                         }
                     }
                 } else if (a[i].isDirectory() && b[i].isDirectory()) {
-                    int subResult = check(a[i].listFiles(), b[i].listFiles());
+                    int subResult = check(a[i], b[i]);
                     result += subResult;
                 }
             }
@@ -181,7 +191,7 @@ public class Sync implements Runnable {
             while (true) {
                 File[] refreshedA = dir.listFiles();
                 File[] refreshedB = newDir.listFiles();
-                int result = check(refreshedA, refreshedB);
+                int result = check(dir, newDir);
                 switch (result) {
                     case 1: try {
                             c.CC(refreshedA, 0, 0, newDir);
