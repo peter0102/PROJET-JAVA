@@ -1,5 +1,7 @@
 # PROJET-JAVA
 TODO : 
--SYNC
--INTERFACE GRAPHIQUE
 -RESEAU
+UML : erreurs à lister :
+    -suppression source/destination
+    -champs vides
+    -bouton désactivé

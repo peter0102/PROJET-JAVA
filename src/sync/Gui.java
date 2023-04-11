@@ -7,11 +7,14 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.SwingConstants;
+import javax.swing.JFileChooser;
+import javax.swing.JTextField;
 
 public class Gui {
 	private boolean isActive = true;
 	private JFrame frmSynchronize;
+	private JTextField sourceTextField;
+	private JTextField destinationTextField;
 
 	/**
 	 * Launch the application.
@@ -43,51 +46,89 @@ public class Gui {
 		frmSynchronize = new JFrame();
 		frmSynchronize.setResizable(false);
 		frmSynchronize.setTitle("Synchronize");
-		frmSynchronize.setBounds(100, 100, 377, 203);
+		frmSynchronize.setBounds(100, 100, 489, 257);
 		frmSynchronize.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmSynchronize.getContentPane().setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Source folder");
-		lblNewLabel.setBounds(10, 11, 84, 19);
-		frmSynchronize.getContentPane().add(lblNewLabel);
+		JLabel stateLabel = new JLabel("");
+		stateLabel.setBounds(207, 132, 141, 14);
+		frmSynchronize.getContentPane().add(stateLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Destination folder");
-		lblNewLabel_1.setBounds(10, 58, 141, 14);
-		frmSynchronize.getContentPane().add(lblNewLabel_1);
-		
-		JLabel lblNewLabel_3 = new JLabel("");
-		lblNewLabel_3.setBounds(146, 94, 141, 14);
-		frmSynchronize.getContentPane().add(lblNewLabel_3);
-		
-		JButton btnNewButton = new JButton("Synchronize");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton startButton = new JButton("Synchronize");
+		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (isActive) {
-					Sync.main(null);
-					lblNewLabel_3.setText("Synchronized");
+					String sourceFolderPath = sourceTextField.getText();
+					String destinationFolderPath = destinationTextField.getText();
+					Sync.main(new String[] {sourceFolderPath, destinationFolderPath});
+					stateLabel.setText("Synchronized");
+                    startButton.setEnabled(false);
 				}
 				else {
-					lblNewLabel_3.setText("Not Synchronized");
+					stateLabel.setText("Not Synchronized");
 				}
 
 			}
 		});
-		btnNewButton.setBounds(10, 132, 160, 23);
-		frmSynchronize.getContentPane().add(btnNewButton);
+		startButton.setBounds(47, 186, 160, 23);
+		frmSynchronize.getContentPane().add(startButton);
 		
-		JButton btnNewButton_1 = new JButton("Stop");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton stopButton = new JButton("Stop");
+		stopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Sync.stopSync();
-				lblNewLabel_3.setText("Not Synchronized");
+				stateLabel.setText("Not Synchronized");
+                startButton.setEnabled(true);
 			}
 		});
-		btnNewButton_1.setBounds(193, 132, 160, 23);
-		frmSynchronize.getContentPane().add(btnNewButton_1);
+		stopButton.setBounds(289, 186, 160, 23);
+		frmSynchronize.getContentPane().add(stopButton);
 		
-		JLabel lblNewLabel_2 = new JLabel("State :");
-		lblNewLabel_2.setBounds(106, 94, 75, 14);
-		frmSynchronize.getContentPane().add(lblNewLabel_2);
+		JLabel stateLabelIniatial = new JLabel("State :");
+		stateLabelIniatial.setBounds(159, 132, 75, 14);
+		frmSynchronize.getContentPane().add(stateLabelIniatial);
+		
+		JButton sourceButton = new JButton("Select source folder :");
+        sourceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Select Source Folder");
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int result = fileChooser.showOpenDialog(frmSynchronize);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    sourceTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                }
+            }
+        });
+
+		sourceButton.setBounds(5, 23, 192, 23);
+		frmSynchronize.getContentPane().add(sourceButton);
+		
+		JButton destinationButton = new JButton("Select destination folder :");
+        destinationButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Select Destination Folder");
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int result = fileChooser.showOpenDialog(frmSynchronize);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    destinationTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                }
+            }
+        });
+
+		destinationButton.setBounds(5, 73, 192, 23);
+		frmSynchronize.getContentPane().add(destinationButton);
+		
+		sourceTextField = new JTextField();
+		sourceTextField.setBounds(207, 24, 242, 20);
+		frmSynchronize.getContentPane().add(sourceTextField);
+		sourceTextField.setColumns(10);
+		
+		destinationTextField = new JTextField();
+		destinationTextField.setBounds(207, 74, 241, 20);
+		frmSynchronize.getContentPane().add(destinationTextField);
+		destinationTextField.setColumns(10);
 		
 
 	}

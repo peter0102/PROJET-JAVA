@@ -2,10 +2,12 @@ package sync;
 import java.io.*;
 import java.nio.file.*;
 public class Sync implements Runnable {
-    private String name;
+    private String sourceFolder;
+    private String destinationFolder;
     private static boolean isActive;
-    public Sync(String name) {
-        this.name = name;
+    public Sync(String sourceFolder, String destinationFolder) {
+        this.sourceFolder = sourceFolder;
+        this.destinationFolder=destinationFolder;
         this.isActive=true;
     }
 
@@ -60,7 +62,7 @@ public class Sync implements Runnable {
     }
     public int check(File x, File y) {
         File[] a=x.listFiles();
-        File []b=y.listFiles();
+        File[] b=y.listFiles();
         if (a == null && b == null || a.length == 0 && b.length == 0) {
             return 0;
         }
@@ -112,15 +114,18 @@ public class Sync implements Runnable {
         }
         return 0;
     }
-    public static void stopSync() {
+    public static void stopSync() { //méthode pour interrompre la boucle
         isActive = false;
     }
     public void run() {
-        File dir = new File("C:\\Users\\LINPa\\Documents\\" + name);
+        File dir = new File(sourceFolder);
         if (dir.exists() && dir.isDirectory()) {
             File[] a = dir.listFiles();
-            Sync c = new Sync(name);
-            File newDir = new File("C:\\Users\\LINPa\\Documents\\" + dir.getName() + "_copy");
+            Sync c = new Sync(sourceFolder,destinationFolder);
+            File newDir = new File(destinationFolder + "\\" + new File(sourceFolder).getName());
+            if (newDir.exists()) {
+                newDir = new File(destinationFolder + File.separator + new File(sourceFolder).getName() + "_copy");
+            }
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
@@ -185,8 +190,12 @@ public class Sync implements Runnable {
     }
 
     public static void main(String[] args) {
-        Sync c = new Sync("test");
-        Thread t = new Thread(c);
-        t.start();
+    	if (args.length!=2) {
+    		System.out.println("Error, 2 arguments are needed, source folder and destination foler");
+    		System.exit(1);
+    	}
+        Sync c = new Sync(args[0],args[1]);
+        Thread thread = new Thread(c);
+        thread.start();
     }
 }
