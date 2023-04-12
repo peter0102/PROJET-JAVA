@@ -1,11 +1,13 @@
 package sync;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -53,22 +55,47 @@ public class Gui {
 		JLabel stateLabel = new JLabel("");
 		stateLabel.setBounds(207, 132, 141, 14);
 		frmSynchronize.getContentPane().add(stateLabel);
-		
+
+        JLabel errorLabel = new JLabel("");
+		errorLabel.setForeground(new Color(255, 0, 0));
+        errorLabel.setBounds(47, 157, 415, 14);
+		frmSynchronize.getContentPane().add(errorLabel);
+
 		JButton startButton = new JButton("Synchronize");
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isActive) {
-					String sourceFolderPath = sourceTextField.getText();
-					String destinationFolderPath = destinationTextField.getText();
-					Sync.main(new String[] {sourceFolderPath, destinationFolderPath});
-					stateLabel.setText("Synchronized");
-                    startButton.setEnabled(false);
-				}
-				else {
-					stateLabel.setText("Not Synchronized");
+                String sourceFolderPath = sourceTextField.getText();
+                String destinationFolderPath = destinationTextField.getText();
+				File sourceDir = new File(sourceFolderPath);
+				File destDir = new File(destinationFolderPath);
+                if (sourceFolderPath.isEmpty() || destinationFolderPath.isEmpty()) {
+                    errorLabel.setText("Error: Please fill both source and destination folders.");
+                    return;
+                }
+				if (!sourceDir.exists() || !sourceDir.isDirectory()) {
+					errorLabel.setText("");
+				    errorLabel.setText("Error: Invalid source folder path");
+				    return;
 				}
 
-			}
+				if (!destDir.exists() || !destDir.isDirectory()) {
+					errorLabel.setText("");
+				    errorLabel.setText("Error: Invalid destination folder path");
+				    return;
+				}
+                    else {
+                    if (isActive) {
+                        Sync.main(new String[] {sourceFolderPath, destinationFolderPath});
+                        stateLabel.setText("Synchronized");
+                        errorLabel.setText("");
+                        startButton.setEnabled(false);
+                    }
+                    else {
+                        stateLabel.setText("Not Synchronized");
+                    }
+
+                }
+            }
 		});
 		startButton.setBounds(47, 186, 160, 23);
 		frmSynchronize.getContentPane().add(startButton);
@@ -132,4 +159,5 @@ public class Gui {
 		
 
 	}
+    
 }

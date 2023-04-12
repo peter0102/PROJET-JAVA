@@ -176,10 +176,12 @@ public class Sync implements Runnable {
                 }
                 if (!dir.exists()) {
                     System.out.println("Source folder deleted. Exiting loop.");
+                    isActive=false;
                     break;
                 }
                 if (!newDir.exists()) {
                     System.out.println("Destination folder deleted. Exiting loop.");
+                    isActive=false;
                     break;
                 }
                 if (!isActive) {
