@@ -207,8 +207,8 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
     		System.out.println("Error, 2 arguments are needed, source folder and destination foler");
     		System.exit(1);
     	}
-        Sync c = new Sync(args[0],args[1]);
-        Thread thread = new Thread(c);
+        Sync sync = new Sync(args[0],args[1]);
+        Thread thread = new Thread(sync);
         thread.start();
     }
 }
