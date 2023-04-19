@@ -1,6 +1,5 @@
 package sync;
 import java.io.*;
-import java.nio.file.*;
 public class Sync implements Runnable {
     private String sourceFolder;
     private String destinationFolder;
@@ -11,28 +10,30 @@ public class Sync implements Runnable {
         this.isActive=true;
     }
 
-    public void CC(File[] a, int i, int lvl, File dir) throws FileNotFoundException {
-        if (i == a.length) {
-            return;
-        }
-        if (a[i].isFile()) {
-            try {
-                Path source = Paths.get(a[i].getPath());
-                Path destination = Paths.get(dir.getPath() + "\\" + a[i].getName());
-                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (a[i].isDirectory()) {
-            File newDir = new File(dir.getPath() + "\\" + a[i].getName());
-            if (!newDir.exists()) {
-                newDir.mkdir();
-            }
-            CC(a[i].listFiles(), 0, lvl + 1, newDir);
-        }
-        CC(a, i + 1, lvl, dir);
+public void CC(File[] a, int i, int lvl, File dir) throws IOException {
+    if (i == a.length) {
+        return;
     }
+    if (a[i].isFile()) {
+        FileInputStream inputStream = new FileInputStream(a[i]);
+        FileOutputStream outputStream = new FileOutputStream(new File(dir.getPath() + "\\" + a[i].getName()));
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+        }
+        inputStream.close();
+        outputStream.close();
+    }
+    if (a[i].isDirectory()) {
+        File newDir = new File(dir.getPath() + "\\" + a[i].getName());
+        if (!newDir.exists()) {
+            newDir.mkdir();
+        }
+        CC(a[i].listFiles(), 0, lvl + 1, newDir);
+    }
+    CC(a, i + 1, lvl, dir);
+}
     public void delete(File[] a, File[] b) { //supprime dans b ce qu'il n'y a pas dans a
         if (a == null || b == null) {
             return;
@@ -133,6 +134,8 @@ public class Sync implements Runnable {
                 c.CC(a, 0, 0, newDir);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             while (isActive) {
                 File[] refreshedA = dir.listFiles();
@@ -143,6 +146,8 @@ public class Sync implements Runnable {
                             c.CC(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                         break;
                     case -1: delete(refreshedB,refreshedA);
@@ -150,6 +155,8 @@ public class Sync implements Runnable {
                     case 2: try {
                             c.CC(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -159,11 +166,15 @@ public class Sync implements Runnable {
                             c.CC(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                         break;
                     case -3: try {
                             c.CC(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
