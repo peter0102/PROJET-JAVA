@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
-public class Gui {
+public class Gui extends JFrame {
 	private boolean isActive = true;
 	private JFrame frmSynchronize;
 	private JTextField sourceTextField;
@@ -44,7 +44,7 @@ public class Gui {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	void initialize() {
 		frmSynchronize = new JFrame();
 		frmSynchronize.setResizable(false);
 		frmSynchronize.setTitle("Synchronize");
@@ -156,5 +156,9 @@ public class Gui {
 		destinationTextField.setColumns(10);
 
 	}
-
+	public static Gui createAndShowGui() {
+		Gui window = new Gui();
+		window.frmSynchronize.setVisible(true);
+		return window;
+	}
 }
