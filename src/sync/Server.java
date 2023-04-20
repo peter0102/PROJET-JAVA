@@ -30,7 +30,7 @@ public class Server {
 				}
 	
 				// Create output stream to write file to destination folder
-				FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\LinPa\\Documents\\" + fileName);
+				FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\LINPa\\Documents\\" + fileName);
 	
 				// Read file data from client and write it to output stream
 				byte[] buffer = new byte[1024];
