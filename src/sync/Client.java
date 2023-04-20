@@ -1,45 +1,53 @@
 package sync;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 
 public class Client {
-    private static Socket socket;
-    private static BufferedOutputStream bos;
-    private static DataOutputStream dos;
-    private static String rootDir;
-
     public static void main(String[] args) throws IOException {
-        rootDir = "C:\\Users\\Peter\\Documents\\test";
-        socket = new Socket("192.168.1.100", 8000);
-        bos = new BufferedOutputStream(socket.getOutputStream());
-        dos = new DataOutputStream(bos);
+        String directory = "C:\\Users\\Peter\\Documents\\test";
 
-        sendFiles(new File(rootDir));
+        File[] files = new File(directory).listFiles();
+
+        Socket socket = new Socket("192.168.1.100", 8000);
+
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        DataOutputStream dos = new DataOutputStream(bos);
+
+        dos.writeInt(files.length);
+
+        for (File file : files) {
+            long length = file.length();
+            dos.writeLong(length);
+
+            String name = file.getName();
+            dos.writeUTF(name);
+
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+
+            int theByte = 0;
+            while ((theByte = bis.read()) != -1)
+                bos.write(theByte);
+
+            bis.close();
+        }
 
         dos.close();
     }
 
-    public static void sendFiles(File file) throws IOException {
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            dos.writeUTF(file.getAbsolutePath());
-            dos.writeInt(files.length);
-            for (File f : files) {
-                sendFiles(f);
-            }
-        } else {
-            dos.writeUTF(file.getAbsolutePath().replace(rootDir, ""));
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
+    public void sendFile(File file) throws IOException {
+        if (file.isFile()) {
 
-            byte[] buffer = new byte[8192];
-            int count;
-            while ((count = bis.read(buffer)) > 0) {
-                bos.write(buffer, 0, count);
-            }
-
-            bis.close();
         }
     }
+    
 }
