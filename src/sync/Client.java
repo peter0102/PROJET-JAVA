@@ -19,14 +19,13 @@ public class Client {
         File file = new File("C:\\Users\\Peter\\Documents\\test\\test1.txt");
         // Get the size of the file
         long length = file.length();
-        byte[] bytes = new byte[16 * 1024];
+        byte[] bytes = new byte[1024];
         InputStream in = new FileInputStream(file);
         OutputStream out = socket.getOutputStream();
-        
-        // Write the name of the file to the output stream
+        DataOutputStream dataOut = new DataOutputStream(out);
         String fileName = file.getName();
-        out.write(fileName.getBytes());
-        out.write('\n');
+        // Send the file name to the server
+        dataOut.writeUTF(fileName);
         
         int count;
         while ((count = in.read(bytes)) > 0) {
