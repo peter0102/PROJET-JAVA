@@ -13,9 +13,15 @@ import java.net.Socket;
 
 public class Server {
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(8000);
-
         while (true) {
+            ServerSocket serverSocket = null;
+
+            try {
+                serverSocket = new ServerSocket(8000);
+            } catch (IOException ex) {
+                System.out.println("Can't setup server on this port number. ");
+            }
+
             Socket socket = null;
             InputStream in = null;
             OutputStream out = null;
@@ -37,26 +43,30 @@ public class Server {
                 DataInputStream dataIn = new DataInputStream(in);
                 String fileName = dataIn.readUTF();
 
+                // Read the file size from the input stream
+                long fileSize = dataIn.readLong();
+
                 // Open a file output stream with the received file name
                 out = new FileOutputStream("C:\\Users\\LINPa\\Documents\\" + fileName);
+
+                byte[] bytes = new byte[1024];
+                int count;
+                long totalBytesRead = 0;
+
+                // Read the file content until the total number of bytes read matches the file size
+                while (totalBytesRead < fileSize && (count = in.read(bytes)) > 0) {
+                    out.write(bytes, 0, count);
+                    totalBytesRead += count;
+                }
+
+                out.close();
             } catch (FileNotFoundException ex) {
                 System.out.println("File not found. ");
             }
 
-            byte[] bytes = new byte[1024];
-
-            int count;
-            while ((count = in.read(bytes)) > 0) {
-                out.write(bytes, 0, count);
-            }
-
-            // Close the output stream after each file is written
-            out.close();
-
-            // Close the input stream and socket
             in.close();
             socket.close();
+            serverSocket.close();
         }
     }
 }
-
