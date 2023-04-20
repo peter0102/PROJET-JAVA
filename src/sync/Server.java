@@ -37,8 +37,12 @@ public class Server {
 			System.out.println("Can't get socket input stream. ");
 		}
 
+		// Read the file name from the input stream
+		DataInputStream dataIn = new DataInputStream(in);
+		String fileName = dataIn.readUTF();
+		
 		try {
-			out = new FileOutputStream("C:\\Users\\LINPa\\Documents\\test1.txt");
+			out = new FileOutputStream("C:\\Users\\LINPa\\Documents\\" + fileName);
 		} catch (FileNotFoundException ex) {
 			System.out.println("File not found. ");
 		}
@@ -56,3 +60,4 @@ public class Server {
 		serverSocket.close();
 	}
 }
+

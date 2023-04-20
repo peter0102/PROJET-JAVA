@@ -23,6 +23,11 @@ public class Client {
         InputStream in = new FileInputStream(file);
         OutputStream out = socket.getOutputStream();
         
+        // Write the name of the file to the output stream
+        String fileName = file.getName();
+        out.write(fileName.getBytes());
+        out.write('\n');
+        
         int count;
         while ((count = in.read(bytes)) > 0) {
             out.write(bytes, 0, count);
@@ -33,3 +38,4 @@ public class Client {
         socket.close();
     }
 }
+
