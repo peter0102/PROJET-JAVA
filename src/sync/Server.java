@@ -33,15 +33,9 @@ public class Server {
 			}
 	
 			try {
-				in = socket.getInputStream();
-			} catch (IOException ex) {
-				System.out.println("Can't get socket input stream. ");
-			}
-	
-			try {
 				// Read the file name from the input stream
-				DataInputStream dataIn = new DataInputStream(in);
-				String fileName = dataIn.readUTF(); 
+				DataInputStream dataIn = new DataInputStream(socket.getInputStream());
+				String fileName = dataIn.readUTF();
 	
 				// Open a file output stream with the received file name
 				out = new FileOutputStream("C:\\Users\\LINPa\\Documents\\" + fileName);
@@ -50,14 +44,12 @@ public class Server {
 			}
 	
 			byte[] bytes = new byte[1024];
-	
 			int count;
-			while ((count = in.read(bytes)) > 0) {
+			while ((count = socket.getInputStream().read(bytes)) > 0) {
 				out.write(bytes, 0, count);
 			}
 	
 			out.close();
-			in.close();
 			socket.close();
 			serverSocket.close();
 		}
