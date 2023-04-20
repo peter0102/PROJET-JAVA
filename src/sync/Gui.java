@@ -11,6 +11,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
@@ -173,20 +174,18 @@ public class Gui extends JFrame {
 		            System.out.println("Connection established!"); // print message to console
 					serverActualStateLabel.setText("Connection established!");
 					DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-					int fileSize = dataInputStream.readInt();
-					if (fileSize > 0) {
-						byte[] fileNameBytes = new byte[fileSize];
-						dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
-						String fileName = new String(fileNameBytes);
-						FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-						byte[] buffer = new byte[1024];
-						int bytesRead;
-						while ((bytesRead = dataInputStream.read(buffer)) > 0) {
-							fileOutputStream.write(buffer, 0, bytesRead);
-						}
-						fileOutputStream.close();
-						System.out.println("File " + fileName + " received from client.");
+					String sourceFolderPath = dataInputStream.readUTF();
+					String destinationFolderPath = dataInputStream.readUTF();
+					File destDir = new File(destinationFolderPath);
+					if (!destDir.exists()) {
+						destDir.mkdirs();
 					}
+					File sourceDir = new File(sourceFolderPath);
+					copy(sourceDir, destDir,0,0);
+
+					DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+					dataOutputStream.writeUTF("Folder copied successfully!");
+
 		        }
 		        catch (IOException f) {
 		            System.out.println("Error: " + f);
@@ -196,7 +195,7 @@ public class Gui extends JFrame {
 		serverLaunchButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		serverLaunchButton.setBounds(166, 161, 150, 49);
 		serverPanel.add(serverLaunchButton);
-		
+
 		JButton startButton = new JButton("Synchronize");
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -211,14 +210,13 @@ public class Gui extends JFrame {
 		            Socket socket = new Socket(IP, port); // create client socket and connect to server
 		            System.out.println("Connection established!"); // print message to console
 					DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-					String sourceFileName = sourceDir.getName();
-					byte[] sourceFileNameBytes = sourceFileName.getBytes();
-					byte[] sourceFileLengthBytes = new byte[(int)sourceDir.length()];
-					fileInputStream.read(sourceFileLengthBytes);
-					dataOutputStream.writeInt(sourceFileNameBytes.length);
-					dataOutputStream.write(sourceFileNameBytes);
-					dataOutputStream.writeInt(sourceFileLengthBytes.length);
-					dataOutputStream.write(sourceFileLengthBytes);
+					dataOutputStream.write(sourceFolderPath.getBytes());
+					dataOutputStream.write(destinationFolderPath.getBytes());
+					DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+					String response = dataInputStream.readUTF();
+
+					System.out.println(response);
+
 		        }
 		        catch (IOException f) {
 		            System.out.println("Error: " + f);
@@ -335,5 +333,30 @@ public class Gui extends JFrame {
 		Gui window = new Gui();
 		window.frmeSynchronize.setVisible(true);
 		return window;
+	}
+	public void copy(File source, File destination, int i, int lvl) throws IOException {
+		File[] sourceDir = source.listFiles();
+		if (i == sourceDir.length) {
+			return;
+		}
+		if (sourceDir[i].isFile()) {
+			FileInputStream inputStream = new FileInputStream(sourceDir[i]);
+			FileOutputStream outputStream = new FileOutputStream(new File(destination.getPath() + "\\" + sourceDir[i].getName()));
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = inputStream.read(buffer)) > 0) {
+				outputStream.write(buffer, 0, length);
+			}
+			inputStream.close();
+			outputStream.close();
+		}
+		if (sourceDir[i].isDirectory()) {
+			File newDir = new File(destination.getPath() + "\\" + sourceDir[i].getName());
+			if (!newDir.exists()) {
+				newDir.mkdir();
+			}
+			copy(sourceDir[i], newDir, 0, lvl+1);
+		}
+		copy(source,destination, i + 1, lvl);
 	}
 }
