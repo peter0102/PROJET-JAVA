@@ -25,6 +25,17 @@ public class Client {
         dos.writeInt(files.length);
 
         for (File file : files) {
+            sendFile(file,socket);
+        }
+
+        dos.close();
+    }
+
+    public static void sendFile(File file,Socket socket) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        DataOutputStream dos = new DataOutputStream(bos);
+        if (file.isFile()) {
+
             long length = file.length();
             dos.writeLong(length);
 
@@ -40,14 +51,14 @@ public class Client {
 
             bis.close();
         }
-
-        dos.close();
-    }
-
-    public void sendFile(File file) throws IOException {
-        if (file.isFile()) {
-
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            dos.writeInt(files.length);
+            for (File f : files) {
+                sendFile(f, socket);
+            }
         }
+        dos.close();
     }
     
 }
