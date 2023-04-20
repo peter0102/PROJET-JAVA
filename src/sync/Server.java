@@ -41,6 +41,8 @@ public class Server {
 			}
 			
 			dis.close();
+			socket.close();
+            serverSocket.close();
         }
     }
 }
