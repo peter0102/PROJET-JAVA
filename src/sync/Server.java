@@ -14,59 +14,33 @@ import java.net.Socket;
 public class Server {
     public static void main(String[] args) throws IOException {
         while (true) {
-            ServerSocket serverSocket = null;
+			String dirPath ="C:\\Users\\LINPa\\Documents\\";
 
-            try {
-                serverSocket = new ServerSocket(8000);
-            } catch (IOException ex) {
-                System.out.println("Can't setup server on this port number. ");
-            }
-
-            Socket socket = null;
-            InputStream in = null;
-            OutputStream out = null;
-
-            try {
-                socket = serverSocket.accept();
-            } catch (IOException ex) {
-                System.out.println("Can't accept client connection. ");
-            }
-
-            try {
-                in = socket.getInputStream();
-            } catch (IOException ex) {
-                System.out.println("Can't get socket input stream. ");
-            }
-
-            try {
-                // Read the file name from the input stream
-                DataInputStream dataIn = new DataInputStream(in);
-                String fileName = dataIn.readUTF();
-
-                // Read the file size from the input stream
-                long fileSize = dataIn.readLong();
-
-                // Open a file output stream with the received file name
-                out = new FileOutputStream("C:\\Users\\LINPa\\Documents\\" + fileName);
-
-                byte[] bytes = new byte[1024];
-                int count;
-                long totalBytesRead = 0;
-
-                // Read the file content until the total number of bytes read matches the file size
-                while (totalBytesRead < fileSize && (count = in.read(bytes)) > 0) {
-                    out.write(bytes, 0, count);
-                    totalBytesRead += count;
-                }
-
-                out.close();
-            } catch (FileNotFoundException ex) {
-                System.out.println("File not found. ");
-            }
-
-            in.close();
-            socket.close();
-            serverSocket.close();
+			ServerSocket serverSocket = new ServerSocket(8000);
+			Socket socket = serverSocket.accept();
+			
+			BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+			DataInputStream dis = new DataInputStream(bis);
+			
+			int filesCount = dis.readInt();
+			File[] files = new File[filesCount];
+			
+			for(int i = 0; i < filesCount; i++)
+			{
+				long fileLength = dis.readLong();
+				String fileName = dis.readUTF();
+			
+				files[i] = new File(dirPath + "\\" + fileName);
+			
+				FileOutputStream fos = new FileOutputStream(files[i]);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+			
+				for(int j = 0; j < fileLength; j++) bos.write(bis.read());
+			
+				bos.close();
+			}
+			
+			dis.close();
         }
     }
 }

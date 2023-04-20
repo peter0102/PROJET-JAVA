@@ -1,5 +1,7 @@
 package sync;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,33 +13,35 @@ import java.net.Socket;
 
 public class Client {
     public static void main(String[] args) throws IOException {
+        String directory = "C:\\Users\\Peter\\Documents\\test";
+        
+        File[] files = new File(directory).listFiles();
+        
         Socket socket = new Socket("192.168.1.100", 8000);
-
-        File fileDir = new File("C:\\Users\\Peter\\Documents\\test");
-        File[] files = fileDir.listFiles();
-        for (File file : files) {
-            if (file.isFile()) {
-                byte[] bytes = new byte[1024];
-                InputStream in = new FileInputStream(file);
-                OutputStream out = socket.getOutputStream();
-                DataOutputStream dataOut = new DataOutputStream(out);
-                String fileName = file.getName();
-                // Send the file name to the server
-                dataOut.writeUTF(fileName);
-
-                // Send the size of the file to the server
-                dataOut.writeLong(file.length());
-
-                int count;
-                while ((count = in.read(bytes)) > 0) {
-                    out.write(bytes, 0, count);
-                }
-                in.close();
-                out.close();
-            }
+        
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        DataOutputStream dos = new DataOutputStream(bos);
+        
+        dos.writeInt(files.length);
+        
+        for(File file : files)
+        {
+            long length = file.length();
+            dos.writeLong(length);
+        
+            String name = file.getName();
+            dos.writeUTF(name);
+        
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+        
+            int theByte = 0;
+            while((theByte = bis.read()) != -1) bos.write(theByte);
+        
+            bis.close();
         }
-
-        socket.close();
+        
+        dos.close();
     }
 }
 
