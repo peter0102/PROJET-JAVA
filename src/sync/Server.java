@@ -20,18 +20,35 @@ public class Server {
             Socket socket = serverSocket.accept();
             System.out.println("New client connected: " + socket.getInetAddress().getHostAddress());
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            String sourceFolderPath = dataInputStream.readUTF();
-            String destinationFolderPath = dataInputStream.readUTF();
-            File sourceFolder = new File(sourceFolderPath);
-
-            copyFolder(sourceFolder, new File(destinationFolderPath));
-
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            dataOutputStream.writeUTF("Copy operation completed successfully!");
-            dataOutputStream.flush();
-
-            socket.close();
-        }
+			while (true) {
+				String fileName = dataInputStream.readUTF();
+	
+				// Break the loop if the client signals that all files have been sent
+				if (fileName.equals("done")) {
+					System.out.println("All files received from client");
+					break;
+				}
+	
+				// Create output stream to write file to destination folder
+				FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\LinPa\\Documents\\" + fileName);
+	
+				// Read file data from client and write it to output stream
+				byte[] buffer = new byte[1024];
+				int length;
+				while ((length = dataInputStream.read(buffer)) > 0) {
+					fileOutputStream.write(buffer, 0, length);
+				}
+				fileOutputStream.close();
+				System.out.println("Received file: " + fileName);
+			}
+	
+			// Send response to client
+			dataInputStream.close();
+			socket.close();
+			serverSocket.close();
+			System.out.println("Transfer completed successfully");
+		}
+		
     }
 
     public static void copyFolder(File source, File destination) throws IOException {
