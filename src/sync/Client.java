@@ -11,12 +11,9 @@ import java.net.Socket;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        Socket socket = null;
-        String host = "127.0.0.1";
-
-        socket = new Socket("192.168.1.100", 8000);
+        Socket socket = new Socket("192.168.1.100", 8000);
         
-        File file = new File("C:\\Users\\Peter\\Documents\\test\\test1.txt");
+        File file = new File("C:\\Users\\Peter\\Documents\\test\\dofus-2022-06-29_19-09-08-Photofiiltre.png");
         // Get the size of the file
         long length = file.length();
         byte[] bytes = new byte[1024];
