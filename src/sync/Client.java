@@ -26,35 +26,46 @@ public class Client {
         dos.writeInt(files.length);
     
         for (File sourceFile : files) {
-            if (sourceFile.isFile()) {
+            if (sourceFile.isDirectory()) {
+                dos.writeLong(0L); // indicate that this is a directory
+                dos.writeUTF(sourceFile.getName()); // send the name of the directory
+    
+                sendFiles(sourceFile, socket); // recursively send files in the directory
+            } else {
                 long length = sourceFile.length();
                 dos.writeLong(length);
-        
+    
                 String name = sourceFile.getName();
                 dos.writeUTF(name);
-        
+    
                 FileInputStream fis = new FileInputStream(sourceFile);
                 BufferedInputStream bis = new BufferedInputStream(fis);
-        
+    
                 int theByte = 0;
                 while ((theByte = bis.read()) != -1)
                     bos.write(theByte);
-        
+    
                 bis.close();
-            }
-            if (sourceFile.isDirectory()) {
-                long length = sourceFile.length();
-                dos.writeLong(length);
-        
-                String name = sourceFile.getName();
-                dos.writeUTF(name);
-                
-                sendFiles(sourceFile, socket);
             }
         }
     
+        dos.flush(); // flush the output stream to ensure all data has been sent
+        socket.shutdownOutput(); // signal that we have finished sending data
+    
+        // wait for the server to acknowledge receipt of all data
+        InputStream inputStream = socket.getInputStream();
+        int acknowledgement = inputStream.read();
+        if (acknowledgement == 1) {
+            System.out.println("All files sent successfully");
+        } else {
+            System.out.println("Error sending files");
+        }
+    
         dos.close();
+        socket.close();
     }
+    
+    
     
     
 }

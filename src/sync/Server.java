@@ -18,27 +18,32 @@ public class Server {
 			 DataInputStream dis = new DataInputStream(bis)) {
 	
 			int filesCount = dis.readInt();
+			File[] files = new File[filesCount];
 	
 			for (int i = 0; i < filesCount; i++) {
 				long fileLength = dis.readLong();
 				String fileName = dis.readUTF();
 	
-				File file = new File(dirPath + "\\" + fileName);
-				if (file.isDirectory()) {
-					file.mkdirs(); // create the subdirectory
-					receiveFiles(socket, dirPath + "\\" + fileName); // recursively receive files in the subdirectory
-				} else {
-					File parentDir = file.getParentFile();
-					if (!parentDir.exists()) {
-						parentDir.mkdirs(); // create parent directory if it does not exist
-					}
+				if (fileLength == 0) { // directory
+					File dir = new File(dirPath + "\\" + fileName);
+					dir.mkdir();
+					receiveFiles(socket, dirPath + "\\" + fileName);
+				} else { // file
+					files[i] = new File(dirPath + "\\" + fileName);
 	
-					try (FileOutputStream fos = new FileOutputStream(file);
+					try (FileOutputStream fos = new FileOutputStream(files[i]);
 						 BufferedOutputStream bos = new BufferedOutputStream(fos)) {
 	
-						for (int j = 0; j < fileLength; j++) {
-							bos.write(bis.read());
+						byte[] buffer = new byte[(int) fileLength];
+						int bytesRead = 0;
+						while (bytesRead < fileLength) {
+							int n = bis.read(buffer, bytesRead, (int) fileLength - bytesRead);
+							if (n < 0) {
+								throw new IOException("Unexpected end of stream");
+							}
+							bytesRead += n;
 						}
+						bos.write(buffer);
 					}
 				}
 			}
