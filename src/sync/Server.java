@@ -18,35 +18,33 @@ public class Server {
 			 DataInputStream dis = new DataInputStream(bis)) {
 	
 			int filesCount = dis.readInt();
-			File[] files = new File[filesCount];
 	
 			for (int i = 0; i < filesCount; i++) {
 				long fileLength = dis.readLong();
 				String fileName = dis.readUTF();
-				String filePath = dirPath + "\\" + fileName;
 	
-				// Get the parent directory of the file
-				File parentDir = new File(new File(filePath).getParent());
+				File file = new File(dirPath + "\\" + fileName);
+				if (file.isDirectory()) {
+					file.mkdirs(); // create the subdirectory
+					receiveFiles(socket, dirPath + "\\" + fileName); // recursively receive files in the subdirectory
+				} else {
+					File parentDir = file.getParentFile();
+					if (!parentDir.exists()) {
+						parentDir.mkdirs(); // create parent directory if it does not exist
+					}
 	
-				// Create the parent directory if it does not exist
-				if (!parentDir.exists()) {
-					parentDir.mkdirs();
-				}
+					try (FileOutputStream fos = new FileOutputStream(file);
+						 BufferedOutputStream bos = new BufferedOutputStream(fos)) {
 	
-				files[i] = new File(filePath);
-	
-				try (FileOutputStream fos = new FileOutputStream(files[i]);
-					 BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-	
-					for (int j = 0; j < fileLength; j++) {
-						bos.write(bis.read());
+						for (int j = 0; j < fileLength; j++) {
+							bos.write(bis.read());
+						}
 					}
 				}
 			}
 		}
 	}
 	
-
     public static void main(String[] args) throws IOException {
         String dirPath = "C:\\Users\\LINPa\\Documents\\";
         try (ServerSocket serverSocket = new ServerSocket(8000)) {
