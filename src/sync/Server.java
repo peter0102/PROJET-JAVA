@@ -13,29 +13,39 @@ import java.net.Socket;
 
 public class Server {
     
-    private static void receiveFiles(Socket socket, String dirPath) throws IOException {
-        try (BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-             DataInputStream dis = new DataInputStream(bis)) {
-
-            int filesCount = dis.readInt();
-            File[] files = new File[filesCount];
-
-            for (int i = 0; i < filesCount; i++) {
-                long fileLength = dis.readLong();
-                String fileName = dis.readUTF();
-
-                files[i] = new File(dirPath + "\\" + fileName);
-
-                try (FileOutputStream fos = new FileOutputStream(files[i]);
-                     BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-
-                    for (int j = 0; j < fileLength; j++) {
-                        bos.write(bis.read());
-                    }
-                }
-            }
-        }
-    }
+	private static void receiveFiles(Socket socket, String dirPath) throws IOException {
+		try (BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+			 DataInputStream dis = new DataInputStream(bis)) {
+	
+			int filesCount = dis.readInt();
+			File[] files = new File[filesCount];
+	
+			for (int i = 0; i < filesCount; i++) {
+				long fileLength = dis.readLong();
+				String fileName = dis.readUTF();
+				String filePath = dirPath + "\\" + fileName;
+	
+				// Get the parent directory of the file
+				File parentDir = new File(new File(filePath).getParent());
+	
+				// Create the parent directory if it does not exist
+				if (!parentDir.exists()) {
+					parentDir.mkdirs();
+				}
+	
+				files[i] = new File(filePath);
+	
+				try (FileOutputStream fos = new FileOutputStream(files[i]);
+					 BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+	
+					for (int j = 0; j < fileLength; j++) {
+						bos.write(bis.read());
+					}
+				}
+			}
+		}
+	}
+	
 
     public static void main(String[] args) throws IOException {
         String dirPath = "C:\\Users\\LINPa\\Documents\\";
