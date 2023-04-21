@@ -14,64 +14,47 @@ import java.net.Socket;
 public class Client {
     public static void main(String[] args) throws IOException {
         String directory = "C:\\Users\\Peter\\Documents\\test";
-
-        File[] files = new File(directory).listFiles();
-
+        File files = new File(directory);
         Socket socket = new Socket("192.168.1.100", 8000);
-
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-        DataOutputStream dos = new DataOutputStream(bos);
-
-        dos.writeInt(files.length);
-
-        for (File file : files) {
-            long length = file.length();
-            dos.writeLong(length);
-
-            String name = file.getName();
-            dos.writeUTF(name);
-
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            int theByte = 0;
-            while ((theByte = bis.read()) != -1)
-                bos.write(theByte);
-
-            bis.close();
-        }
-
-        dos.close();
+        sendFiles(files, socket);
     }
 
-    public void sendFile(File file,Socket socket) throws IOException {
+    public static void sendFiles(File file, Socket socket) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
         DataOutputStream dos = new DataOutputStream(bos);
-        if (file.isFile()) {
-
-            long length = file.length();
-            dos.writeLong(length);
-
-            String name = file.getName();
-            dos.writeUTF(name);
-
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            int theByte = 0;
-            while ((theByte = bis.read()) != -1)
-                bos.write(theByte);
-
-            bis.close();
-        }
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            dos.writeInt(files.length);
-            for (File f : files) {
-                sendFile(f, socket);
+        File[] files = file.listFiles();
+        dos.writeInt(files.length);
+    
+        for (File sourceFile : files) {
+            if (sourceFile.isFile()) {
+                long length = sourceFile.length();
+                dos.writeLong(length);
+        
+                String name = sourceFile.getName();
+                dos.writeUTF(name);
+        
+                FileInputStream fis = new FileInputStream(sourceFile);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+        
+                int theByte = 0;
+                while ((theByte = bis.read()) != -1)
+                    bos.write(theByte);
+        
+                bis.close();
+            }
+            if (sourceFile.isDirectory()) {
+                long length = sourceFile.length();
+                dos.writeLong(length);
+        
+                String name = sourceFile.getName();
+                dos.writeUTF(name);
+                
+                sendFiles(sourceFile, socket);
             }
         }
+    
         dos.close();
     }
+    
     
 }
