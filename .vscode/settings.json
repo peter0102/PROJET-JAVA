@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/jgoodies-common-1.8.1.jar",
+        "lib/jgoodies-forms-1.9.0.jar",
+        "lib/SwingLayout-1.0.4.jar"
+    ]
+}
