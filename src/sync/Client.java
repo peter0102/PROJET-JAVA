@@ -1,71 +1,36 @@
 package sync;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class Client {
-    public static void main(String[] args) throws IOException {
-        String directory = "C:\\Users\\Peter\\Documents\\test";
-        File files = new File(directory);
-        Socket socket = new Socket("192.168.1.100", 8000);
-        sendFiles(files, socket);
+    public static void main(String[] args) throws Exception {
+        Socket clientSocket = new Socket("localhost", 1234);
+        OutputStream outputStream = clientSocket.getOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        String folderPath = "C:\\Users\\Peter\\Documents\\test"; //replace with the path of the folder to be sent
+        File folder = new File(folderPath);
+        sendFolder(folder, objectOutputStream);
+        objectOutputStream.close();
+        outputStream.close();
+        clientSocket.close();
     }
 
-    public static void sendFiles(File file, Socket socket) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-        DataOutputStream dos = new DataOutputStream(bos);
-        File[] files = file.listFiles();
-        dos.writeInt(files.length);
-    
-        for (File sourceFile : files) {
-            if (sourceFile.isDirectory()) {
-                dos.writeLong(0L); // indicate that this is a directory
-                dos.writeUTF(sourceFile.getName()); // send the name of the directory
-    
-                sendFiles(sourceFile, socket); // recursively send files in the directory
+    private static void sendFolder(File folder, ObjectOutputStream objectOutputStream) throws IOException {
+        objectOutputStream.writeObject(folder);
+        File[] files = folder.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                sendFolder(file, objectOutputStream);
             } else {
-                long length = sourceFile.length();
-                dos.writeLong(length);
-    
-                String name = sourceFile.getName();
-                dos.writeUTF(name);
-    
-                FileInputStream fis = new FileInputStream(sourceFile);
-                BufferedInputStream bis = new BufferedInputStream(fis);
-    
-                int theByte = 0;
-                while ((theByte = bis.read()) != -1)
-                    bos.write(theByte);
-    
-                bis.close();
+                FileInputStream fileInputStream = new FileInputStream(file);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fileInputStream.read(buffer)) > 0) {
+                    objectOutputStream.write(buffer, 0, bytesRead);
+                }
+                fileInputStream.close();
             }
         }
-    
-        dos.flush(); // flush the output stream to ensure all data has been sent
-        socket.shutdownOutput(); // signal that we have finished sending data
-    
-        // wait for the server to acknowledge receipt of all data
-        InputStream inputStream = socket.getInputStream();
-        int acknowledgement = inputStream.read();
-        if (acknowledgement == 1) {
-            System.out.println("All files sent successfully");
-        } else {
-            System.out.println("Error sending files");
-        }
-    
-        dos.close();
-        socket.close();
     }
-    
-    
-    
-    
 }

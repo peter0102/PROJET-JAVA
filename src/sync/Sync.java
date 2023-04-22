@@ -10,7 +10,7 @@ public class Sync implements Runnable {
         this.isActive=true;
     }
 
-public void CC(File[] a, int i, int lvl, File dir) throws IOException {
+public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
     if (i == a.length) {
         return;
     }
@@ -30,9 +30,9 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
         if (!newDir.exists()) {
             newDir.mkdir();
         }
-        CC(a[i].listFiles(), 0, lvl + 1, newDir);
+        copyFiles(a[i].listFiles(), 0, lvl + 1, newDir);
     }
-    CC(a, i + 1, lvl, dir);
+    copyFiles(a, i + 1, lvl, dir);
 }
     public void delete(File[] a, File[] b) { //supprime dans b ce qu'il n'y a pas dans a
         if (a == null || b == null) {
@@ -131,7 +131,7 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
                 newDir.mkdir();
             }
             try { //1ère copie du dossier source vers le dossier destination
-                c.CC(a, 0, 0, newDir);
+                c.copyFiles(a, 0, 0, newDir);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -143,7 +143,7 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
                 int result = check(dir, newDir);
                 switch (result) {
                     case 1: try {
-                            c.CC(refreshedA, 0, 0, newDir);
+                            c.copyFiles(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -153,7 +153,7 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
                     case -1: delete(refreshedB,refreshedA);
                         break;
                     case 2: try {
-                            c.CC(refreshedB, 0, 0, dir);
+                            c.copyFiles(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -163,7 +163,7 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
                     case -2: delete(refreshedA,refreshedB);
                         break;
                     case 3: try {
-                            c.CC(refreshedA, 0, 0, newDir);
+                            c.copyFiles(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -171,7 +171,7 @@ public void CC(File[] a, int i, int lvl, File dir) throws IOException {
                         }
                         break;
                     case -3: try {
-                            c.CC(refreshedB, 0, 0, dir);
+                            c.copyFiles(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
