@@ -4,55 +4,54 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
-    DataOutputStream out;
-    Socket socket;
-    public static void main(String[] args) throws Exception {
-        Client client = new Client();
-        client.startConnection("localhost", 8000);
-        File file = new File("C:\\Users\\Peter\\Documents\\test");
-        client.sendFiles(file);
-        client.stopConnection();
+
+    private String directory;
+    private String hostDomain;
+    private int port;
+
+    public Client(String directory, String hostDomain, int port) {
+        this.directory = directory;
+        this.hostDomain = hostDomain;
+        this.port = port;
     }
-    public void sendFiles(File file) {
-        File[] files = file.listFiles();
-        for (File sourceFile : files) {
-            if (sourceFile.isDirectory()) {
-                try {
-                    out.writeInt(1);
-                    out.writeUTF(sourceFile.getName());
-                    sendFiles(sourceFile);
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            if (sourceFile.isFile()) {
-                try {
-                    out.writeInt(0);
-                    out.writeUTF(sourceFile.getName());
-                    FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead = -1;
-                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
-                    }
-                    fileInputStream.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+    public static void main(String[] args) throws IOException {
+        String directory = "C:\\Users\\LINPa\\Documents\\test";
+        String hostDomain = "localhost";
+        int port = 12345;
+
+        Client client = new Client(directory, hostDomain, port);
+        client.sendFiles();
+    }
+
+    public void sendFiles() throws IOException {
+        File[] files = new File(directory).listFiles();
+
+        Socket socket = new Socket("localhost", port);
+
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        DataOutputStream dos = new DataOutputStream(bos);
+
+        dos.writeInt(files.length);
+
+        for (File file : files) {
+            long length = file.length();
+            dos.writeLong(length);
+
+            String name = file.getName();
+            dos.writeUTF(name);
+
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+
+            int theByte = 0;
+            while ((theByte = bis.read()) != -1) {
+                bos.write(theByte);
             }
-            }
+
+            bis.close();
         }
-    }
-    public void startConnection(String ip, int port) throws Exception {
-        socket = new Socket(ip, port);
-        System.out.println("Connected to server");
-        out = new DataOutputStream(socket.getOutputStream());
-    }
 
-    public void stopConnection() throws Exception {
-        out.close();
-        socket.close();
+        dos.close();
     }
-
 }

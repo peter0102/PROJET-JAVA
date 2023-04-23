@@ -1,52 +1,53 @@
 package sync;
-
 import java.io.*;
 import java.net.*;
 
 public class Server {
-    ServerSocket serverSocket;
-    Socket clientSocket;
-    DataInputStream in;
-    FileOutputStream out;
-    String folder;
-    public static void main(String[] args) throws Exception {
-        Server server = new Server();
-        server.folder = "C:\\Users\\Peter\\Documents\\test_copy";
-        server.start(8000);
-        server.stop();
+
+    private String dirPath;
+    private ServerSocket serverSocket;
+
+    public Server(String dirPath, int port) throws IOException {
+        this.dirPath = dirPath;
+        this.serverSocket = new ServerSocket(port);
     }
+	public static void main(String[] args) throws IOException {
+		String dirPath = "C:\\Users\\LINPa\\Documents\\test_copy";
+		int serverPort = 12345;
+	
+		Server server = new Server(dirPath, serverPort);
+		server.receiveFiles();
+	}
+	
+    public void receiveFiles() throws IOException {
+        Socket socket = serverSocket.accept();
 
-    public void start(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
-        clientSocket = serverSocket.accept();
-        in = new DataInputStream(clientSocket.getInputStream());
+        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+        DataInputStream dis = new DataInputStream(bis);
 
-        while (true) {
-            int type = in.readInt();
-            String name = in.readUTF();
-            if (type == 1) {
-                File directory = new File(folder + "\\" + name);
-                if (!directory.exists()) {
-                    directory.mkdir();
-                    System.out.println("Created directory: " + name);
-                }
-            } else if (type == 0) {
-                File file = new File(folder + "\\" + name);
-                out = new FileOutputStream(name);
-                byte[] buffer = new byte[4096];
-                int bytesRead = -1;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-                out.close();
-                System.out.println("Created file: " + name);
+        int filesCount = dis.readInt();
+        File[] files = new File[filesCount];
+
+        for (int i = 0; i < filesCount; i++) {
+            long fileLength = dis.readLong();
+            String fileName = dis.readUTF();
+
+            files[i] = new File(dirPath + "/" + fileName);
+
+            FileOutputStream fos = new FileOutputStream(files[i]);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+            for (int j = 0; j < fileLength; j++) {
+                bos.write(bis.read());
             }
+
+            bos.close();
         }
+
+        dis.close();
     }
 
-    public void stop() throws IOException {
-        in.close();
-        clientSocket.close();
+    public void close() throws IOException {
         serverSocket.close();
     }
 }
