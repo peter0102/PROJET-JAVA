@@ -4,60 +4,49 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
+    ServerSocket serverSocket;
+    Socket clientSocket;
+    DataInputStream in;
+    FileOutputStream out;
+    String folder;
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(1234);
-        System.out.println("Server listening on port 1234");
+        Server server = new Server();
+        server.folder = "C:\\Users\\Peter\\Documents\\test_copy";
+        server.start(8000);
+        server.stop();
+    }
+
+    public void start(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        clientSocket = serverSocket.accept();
+        in = new DataInputStream(clientSocket.getInputStream());
+
         while (true) {
-            Socket socket = serverSocket.accept();
-            InputStream inputStream = socket.getInputStream();
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            try {
-                File folder = (File) objectInputStream.readObject();
-                createFolder(folder, "C:\\Users\\Peter\\Documents\\test_copy");
-            } catch (EOFException e) {
-                System.err.println("Connection closed by client");
-            } finally {
-                objectInputStream.close();
-                inputStream.close();
-                socket.close();
+            int type = in.readInt();
+            String name = in.readUTF();
+            if (type == 1) {
+                File directory = new File(folder + "\\" + name);
+                if (!directory.exists()) {
+                    directory.mkdir();
+                    System.out.println("Created directory: " + name);
+                }
+            } else if (type == 0) {
+                File file = new File(folder + "\\" + name);
+                out = new FileOutputStream(name);
+                byte[] buffer = new byte[4096];
+                int bytesRead = -1;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                out.close();
+                System.out.println("Created file: " + name);
             }
         }
     }
 
-    public static void createFolder(File folder, String outputDirectoryPath) {
-        if (folder.isDirectory()) {
-            String folderName = folder.getName();
-            String folderPath = outputDirectoryPath + File.separator + folderName;
-            File newFolder = new File(folderPath);
-            if (!newFolder.exists()) {
-                newFolder.mkdir();
-            }
-            File[] files = folder.listFiles();
-            for (File file : files) {
-                createFolder(file, folderPath);
-            }
-        } else {
-            String fileName = folder.getName();
-            String filePath = outputDirectoryPath + File.separator + fileName;
-            File newFile = new File(filePath);
-            if (!newFile.exists()) {
-                try {
-                    newFile.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try (InputStream fileInputStream = new FileInputStream(folder);
-                     OutputStream fileOutputStream = new FileOutputStream(newFile)) {
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = fileInputStream.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer, 0, length);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public void stop() throws IOException {
+        in.close();
+        clientSocket.close();
+        serverSocket.close();
     }
 }

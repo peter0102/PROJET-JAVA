@@ -4,33 +4,55 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
+    DataOutputStream out;
+    Socket socket;
     public static void main(String[] args) throws Exception {
-        Socket clientSocket = new Socket("localhost", 1234);
-        OutputStream outputStream = clientSocket.getOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        String folderPath = "C:\\Users\\Peter\\Documents\\test"; //replace with the path of the folder to be sent
-        File folder = new File(folderPath);
-        sendFolder(folder, objectOutputStream);
-        objectOutputStream.close();
-        outputStream.close();
-        clientSocket.close();
+        Client client = new Client();
+        client.startConnection("localhost", 8000);
+        File file = new File("C:\\Users\\Peter\\Documents\\test");
+        client.sendFiles(file);
+        client.stopConnection();
     }
-
-    private static void sendFolder(File folder, ObjectOutputStream objectOutputStream) throws IOException {
-        objectOutputStream.writeObject(folder);
-        File[] files = folder.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                sendFolder(file, objectOutputStream);
-            } else {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fileInputStream.read(buffer)) > 0) {
-                    objectOutputStream.write(buffer, 0, bytesRead);
+    public void sendFiles(File file) {
+        File[] files = file.listFiles();
+        for (File sourceFile : files) {
+            if (sourceFile.isDirectory()) {
+                try {
+                    out.writeInt(1);
+                    out.writeUTF(sourceFile.getName());
+                    sendFiles(sourceFile);
                 }
-                fileInputStream.close();
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            if (sourceFile.isFile()) {
+                try {
+                    out.writeInt(0);
+                    out.writeUTF(sourceFile.getName());
+                    FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    fileInputStream.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             }
         }
     }
+    public void startConnection(String ip, int port) throws Exception {
+        socket = new Socket(ip, port);
+        System.out.println("Connected to server");
+        out = new DataOutputStream(socket.getOutputStream());
+    }
+
+    public void stopConnection() throws Exception {
+        out.close();
+        socket.close();
+    }
+
 }
