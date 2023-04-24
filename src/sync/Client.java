@@ -1,57 +1,68 @@
 package sync;
 
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.util.Base64;
 
 public class Client {
-
-    private String directory;
-    private String hostDomain;
-    private int port;
-
-    public Client(String directory, String hostDomain, int port) {
-        this.directory = directory;
-        this.hostDomain = hostDomain;
-        this.port = port;
-    }
+    Socket socket;
+    PrintWriter out;
+    BufferedReader in;
+    String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
 
     public static void main(String[] args) throws IOException {
-        String directory = "C:\\Users\\LINPa\\Documents\\test";
-        String hostDomain = "localhost";
-        int port = 12345;
-
-        Client client = new Client(directory, hostDomain, port);
-        client.sendFiles();
+        Client client = new Client();
+        client.startConnection("localhost", 8000);
+        client.stopConnection();
     }
 
-    public void sendFiles() throws IOException {
-        File[] files = new File(directory).listFiles();
+    public void startConnection(String host, int port) throws IOException {
+        socket = new Socket(host, port);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        File file = new File(sourceFolder);
+        send(file);
+    }
 
-        Socket socket = new Socket("localhost", port);
+    public void stopConnection() throws IOException {
+        in.close();
+        out.close();
+        socket.close();
+    }
 
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-        DataOutputStream dos = new DataOutputStream(bos);
-
-        dos.writeInt(files.length);
-
-        for (File file : files) {
-            long length = file.length();
-            dos.writeLong(length);
-
-            String name = file.getName();
-            dos.writeUTF(name);
-
-            FileInputStream fis = new FileInputStream(file);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            int theByte = 0;
-            while ((theByte = bis.read()) != -1) {
-                bos.write(theByte);
+    public void send(File file) {
+        File[] files = file.listFiles();
+        for (File sourceFile : files) {
+            String buffer = "";
+            if (sourceFile.isDirectory()) {
+                buffer += "1||";
+                buffer += sourceFile.getPath().substring(this.sourceFolder.length());
+                out.println(buffer);
+                out.flush();
+                send(sourceFile);
             }
-
-            bis.close();
+            if (sourceFile.isFile()) {
+                buffer += "0||";
+                buffer += sourceFile.getPath().substring(this.sourceFolder.length()) + "||";
+                try {
+                    byte[] bytes = Files.readAllBytes(sourceFile.toPath());
+                    if (bytes == null) {
+                        buffer += "";
+                    } else {
+                        buffer += Base64.getEncoder().encodeToString(bytes);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                out.println(buffer);
+                out.flush();
+            }
         }
-
-        dos.close();
+        if ((file.getPath() + File.separator).equals(this.sourceFolder) || file.getPath().equals(this.sourceFolder)) {
+            System.out.println("End send");
+            out.println("end");
+            out.flush();
+        }
     }
 }

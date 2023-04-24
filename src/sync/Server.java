@@ -1,53 +1,65 @@
 package sync;
-import java.io.*;
+
 import java.net.*;
+import java.util.Base64;
+import java.io.*;
 
 public class Server {
-
-    private String dirPath;
     private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
+    String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
 
-    public Server(String dirPath, int port) throws IOException {
-        this.dirPath = dirPath;
-        this.serverSocket = new ServerSocket(port);
+    public static void main(String[] args) throws IOException {
+        Server server = new Server();
+        server.startServer(8000);
+        server.stopServer();
     }
-	public static void main(String[] args) throws IOException {
-		String dirPath = "C:\\Users\\LINPa\\Documents\\test_copy";
-		int serverPort = 12345;
-	
-		Server server = new Server(dirPath, serverPort);
-		server.receiveFiles();
-	}
-	
-    public void receiveFiles() throws IOException {
-        Socket socket = serverSocket.accept();
 
-        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-        DataInputStream dis = new DataInputStream(bis);
-
-        int filesCount = dis.readInt();
-        File[] files = new File[filesCount];
-
-        for (int i = 0; i < filesCount; i++) {
-            long fileLength = dis.readLong();
-            String fileName = dis.readUTF();
-
-            files[i] = new File(dirPath + "/" + fileName);
-
-            FileOutputStream fos = new FileOutputStream(files[i]);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            for (int j = 0; j < fileLength; j++) {
-                bos.write(bis.read());
+    public void startServer(Integer port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        clientSocket = serverSocket.accept();
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String line = in.readLine();
+        while (line != null) {
+            receiveFiles(line);
+            if (line.equals("end")) {
+                break;
             }
-
-            bos.close();
+            line = in.readLine();
         }
-
-        dis.close();
     }
-
-    public void close() throws IOException {
+    public void receiveFiles(String data) {
+        System.out.println(data);
+        String[] separatedData = data.split("\\|\\|");
+        if (data.equals("end")) {
+            return;
+        }
+        if (separatedData[0].equals("1")) {
+            File folder = new File(destinationFolder+File.separator+separatedData[1]);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+        }
+        else if (separatedData[0].equals("0")) {
+            File file = new File(destinationFolder+File.separator+separatedData[1]); 
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
+                fileOutputStream.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void stopServer() throws IOException {
+        in.close();
+        out.close();
+        clientSocket.close();
         serverSocket.close();
     }
+
 }
