@@ -1,5 +1,6 @@
 package sync;
 import java.io.*;
+import java.nio.file.*;
 public class Sync implements Runnable {
     private String sourceFolder;
     private String destinationFolder;
@@ -10,30 +11,28 @@ public class Sync implements Runnable {
         this.isActive=true;
     }
 
-public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
-    if (i == a.length) {
-        return;
-    }
-    if (a[i].isFile()) {
-        FileInputStream inputStream = new FileInputStream(a[i]);
-        FileOutputStream outputStream = new FileOutputStream(new File(dir.getPath() + "\\" + a[i].getName()));
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
+    public void copyFiles(File[] a, int i, int lvl, File dir) throws FileNotFoundException {
+        if (i == a.length) {
+            return;
         }
-        inputStream.close();
-        outputStream.close();
-    }
-    if (a[i].isDirectory()) {
-        File newDir = new File(dir.getPath() + "\\" + a[i].getName());
-        if (!newDir.exists()) {
-            newDir.mkdir();
+        if (a[i].isFile()) {
+            try {
+                Path source = Paths.get(a[i].getPath());
+                Path destination = Paths.get(dir.getPath() + "\\" + a[i].getName());
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        copyFiles(a[i].listFiles(), 0, lvl + 1, newDir);
+        if (a[i].isDirectory()) {
+            File newDir = new File(dir.getPath() + "\\" + a[i].getName());
+            if (!newDir.exists()) {
+                newDir.mkdir();
+            }
+            copyFiles(a[i].listFiles(), 0, lvl + 1, newDir);
+        }
+        copyFiles(a, i + 1, lvl, dir);
     }
-    copyFiles(a, i + 1, lvl, dir);
-}
     public void delete(File[] a, File[] b) { //supprime dans b ce qu'il n'y a pas dans a
         if (a == null || b == null) {
             return;
@@ -123,18 +122,10 @@ public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
         if (dir.exists() && dir.isDirectory()) {
             File[] a = dir.listFiles();
             Sync c = new Sync(sourceFolder,destinationFolder);
-            File newDir = new File(destinationFolder + "\\" + new File(sourceFolder).getName());
-            if (newDir.exists()) {
-                newDir = new File(destinationFolder + File.separator + new File(sourceFolder).getName() + "_copy");
-            }
-            if (!newDir.exists()) {
-                newDir.mkdir();
-            }
+            File newDir = new File(destinationFolder);
             try { //1ère copie du dossier source vers le dossier destination
                 c.copyFiles(a, 0, 0, newDir);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
                 e.printStackTrace();
             }
             while (isActive) {
@@ -146,8 +137,6 @@ public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
                             c.copyFiles(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                         break;
                     case -1: delete(refreshedB,refreshedA);
@@ -155,8 +144,6 @@ public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
                     case 2: try {
                             c.copyFiles(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -166,15 +153,11 @@ public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
                             c.copyFiles(refreshedA, 0, 0, newDir);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                         break;
                     case -3: try {
                             c.copyFiles(refreshedB, 0, 0, dir);
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -207,8 +190,8 @@ public void copyFiles(File[] a, int i, int lvl, File dir) throws IOException {
     		System.out.println("Error, 2 arguments are needed, source folder and destination foler");
     		System.exit(1);
     	}
-        Sync sync = new Sync(args[0],args[1]);
-        Thread thread = new Thread(sync);
+        Sync c = new Sync(args[0],args[1]);
+        Thread thread = new Thread(c);
         thread.start();
     }
 }
