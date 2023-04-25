@@ -1,15 +1,16 @@
 package sync;
 
+import java.net.*;
+import java.util.*;
 import java.io.*;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.util.Base64;
+import java.nio.file.*;
 
 public class Client {
     Socket socket;
     PrintWriter out;
     BufferedReader in;
     String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
+    List<String> filesList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Client client = new Client();
@@ -24,6 +25,22 @@ public class Client {
         File file = new File(sourceFolder);
         int initialLenght = check(file);
         send(file);
+        
+        // Start a new thread to read data from the server
+        Thread readThread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        receiveFiles(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        readThread.start();
+        
         while (true) {
             int newLenght = check(file);
             if (initialLenght!=newLenght) {
@@ -34,6 +51,7 @@ public class Client {
             Thread.sleep(2000);
         }
     }
+    
 
     public void stopConnection() throws IOException {
         in.close();
@@ -87,5 +105,63 @@ public class Client {
         }
         return lenght;
     }
-    
+    public void receiveFiles(String data) throws IOException {
+        String[] separatedData = data.split("\\|\\|");
+        if (data.equals("end")) {
+            delete(new File(sourceFolder));
+            filesList= new ArrayList<>();
+            return;
+        }
+        filesList.add(separatedData[1]);
+        if (separatedData[0].equals("1")) { // 1||path pour les dossiers
+            File folder = new File(sourceFolder+File.separator+separatedData[1]);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+        }
+        else if (separatedData[0].equals("0")) { // 0||path||base64 pour les fichiers
+            File file = new File(sourceFolder+File.separator+separatedData[1]);
+            if (separatedData.length==2){ // 0||path si le fichier est vide, on le crée sans écrire dedans
+                file.createNewFile();
+            }
+            else {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
+                    fileOutputStream.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public void delete(File file) {
+        File[] allFiles = file.listFiles();
+        for (File f : allFiles) {
+            if (!filesList.contains(f.getPath().substring(sourceFolder.length()))) { //on récupère le chemin relatif
+                if (f.isDirectory()) {
+                    deleteFolder(f);
+                }
+                if (f.isFile()) {
+                    f.delete();
+                }
+            }
+            if (f.isDirectory()) {
+                delete(f);
+            }
+        }
+    }
+    public void deleteFolder(File folder) {
+        File[] allFiles = folder.listFiles();
+        for (File f : allFiles) {
+            if (f.isDirectory()) {
+                deleteFolder(f);
+            }
+            if (f.isFile()) {
+                f.delete();
+            }
+        }
+        folder.delete();
+    }
 }

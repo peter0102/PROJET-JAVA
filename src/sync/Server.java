@@ -3,6 +3,7 @@ package sync;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.nio.file.*;
 
 public class Server {
     private ServerSocket serverSocket;
@@ -22,14 +23,31 @@ public class Server {
         clientSocket = serverSocket.accept();
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String line;
+        Thread readThread = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        receiveFiles(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        readThread.start();
+        File file = new File(destinationFolder);
+        int initialLenght = check(file);
+        send(file);
         while (true) {
-            while ((line = in.readLine()) != null) {
-                receiveFiles(line);
+            int newLenght = check(file);
+            if (initialLenght != newLenght) {
+                send(file);
+                initialLenght = newLenght;
+                System.out.println("Files updated");
             }
             Thread.sleep(2000);
         }
-
     }
     public void receiveFiles(String data) throws IOException {
         String[] separatedData = data.split("\\|\\|");
@@ -108,5 +126,38 @@ public class Server {
             }
         }
         folder.delete();
+    }
+    public void send(File file) {
+        File[] files = file.listFiles();
+        for (File sourceFile : files) {
+            String buffer = "";
+            if (sourceFile.isDirectory()) {
+                buffer += "1||";
+                buffer += sourceFile.getPath().substring(this.destinationFolder.length());
+                out.println(buffer);
+                out.flush();
+                send(sourceFile);
+            }
+            if (sourceFile.isFile()) {
+                buffer += "0||";
+                buffer += sourceFile.getPath().substring(this.destinationFolder.length()) + "||";
+                try {
+                    byte[] bytes = Files.readAllBytes(sourceFile.toPath());
+                    if (bytes == null) {
+                        buffer += "";
+                    } else {
+                        buffer += Base64.getEncoder().encodeToString(bytes);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                out.println(buffer);
+                out.flush();
+            }
+        }
+        if ((file.getPath() + File.separator).equals(this.destinationFolder) || file.getPath().equals(this.destinationFolder)) {
+            out.println("end");
+            out.flush();
+        }
     }
 }
