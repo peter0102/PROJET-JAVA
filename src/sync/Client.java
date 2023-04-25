@@ -24,8 +24,10 @@ public class Client {
         send(file);
         if (!firstSend) {
             Thread.sleep(1000);
+            System.out.println("First send not done");
         }
         else {
+            System.out.println("First send done");
             Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
                 public void run() {
                     try {
@@ -43,6 +45,7 @@ public class Client {
                                      // au serveur
                 int newLenght = check(file);
                 if (initialLenght != newLenght) {
+                    System.out.println("Updating files");
                     send(file);
                     initialLenght = newLenght;
                 }
