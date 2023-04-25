@@ -9,7 +9,7 @@ public class Client {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
+    String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
     private List<String> filesList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -28,9 +28,9 @@ public class Client {
         Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
             public void run() {
                 try {
-                    String line;
-                    while ((line = in.readLine()) != null) {
-                        receiveFiles(line);
+                    String data;
+                    while ((data = in.readLine()) != null) {
+                        receiveFiles(data);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -43,7 +43,6 @@ public class Client {
             if (initialLenght!=newLenght) {
                 send(file);
                 initialLenght=newLenght;
-                System.out.println("Files updated");
             }
             Thread.sleep(2000);
         }
@@ -56,15 +55,15 @@ public class Client {
         socket.close();
     }
 
-    public void send(File file) {
+    public void send(File file) { // serialisation des fichiers et envoi au serveur
         File[] files = file.listFiles();
         for (File sourceFile : files) {
             String buffer = "";
             if (sourceFile.isDirectory()) {
                 buffer += "1||"; // 1 pour les dossiers; || pour séparer les données
                 buffer += sourceFile.getPath().substring(this.sourceFolder.length());
-                out.println(buffer);
-                out.flush(); // pour bien tout envoyer au serveur
+                out.println(buffer); //envoi des données au serveur
+                out.flush(); // pour bien TOUT envoyer au serveur
                 send(sourceFile);
             }
             if (sourceFile.isFile()) {
@@ -102,7 +101,7 @@ public class Client {
         }
         return lenght;
     }
-    public void receiveFiles(String data) throws IOException {
+    public void receiveFiles(String data) throws IOException { //désérialisation des fichiers et création des dossiers/fichierss
         String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
             delete(new File(sourceFolder));

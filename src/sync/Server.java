@@ -10,7 +10,7 @@ public class Server {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    private String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
+    String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
     private List<String> filesList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -19,16 +19,18 @@ public class Server {
     }
 
     public void startServer(Integer port) throws IOException, InterruptedException {
+        System.out.println("Waiting for connecrion");
         serverSocket = new ServerSocket(port);
         clientSocket = serverSocket.accept();
+        System.out.println("Conneceted");
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         Thread readThread = new Thread(new Runnable() { // sans nouveau thread, le programme bloque à while ((line = in.readLine()) et attends des données du client
             public void run() {
                 try {
-                    String line;
-                    while ((line = in.readLine()) != null) {
-                        receiveFiles(line);
+                    String data;
+                    while ((data = in.readLine()) != null) {
+                        receiveFiles(data);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -44,7 +46,6 @@ public class Server {
             if (initialLenght != newLenght) {
                 send(file);
                 initialLenght = newLenght;
-                System.out.println("Files updated");
             }
             Thread.sleep(2000);
         }

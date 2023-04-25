@@ -7,14 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.*;
 import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -27,9 +21,10 @@ public class Gui extends JFrame {
 	private JFrame frmeSynchronize;
 	private JTextField sourceTextField;
 	private JTextField destinationTextField;
-	private JTextField serverTextField;
+	private JTextField serverPortTextField;
+	private JTextField serverDestinationTextField;
+	private JTextField clientSourceTextField;
 	private JTextField clientPortTextField;
-	private JTextField clientIPTextField;
 
 	/**
 	 * Launch the application.
@@ -70,35 +65,163 @@ public class Gui extends JFrame {
 		JPanel cardPanel = new JPanel(myLayout);
 		frmeSynchronize.getContentPane().add(cardPanel, "Base");
 		
+		JPanel firstPanel = new JPanel();
+		cardPanel.add(firstPanel,"First");
+		firstPanel.setLayout(null);
+		
+		JButton firstPanelSync = new JButton("Sync on one computer");
+		firstPanelSync.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				myLayout.show(cardPanel,"Basic");
+			}
+		});
+		firstPanelSync.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		firstPanelSync.setBounds(40, 73, 194, 65);
+		firstPanel.add(firstPanelSync);
+		
+		JButton firstPanelSyncNetwork = new JButton("Sync on network");
+		firstPanelSyncNetwork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				myLayout.show(cardPanel,"Main");
+			}
+		});
+		firstPanelSyncNetwork.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		firstPanelSyncNetwork.setBounds(258, 73, 194, 65);
+		firstPanel.add(firstPanelSyncNetwork);
+		
 		JPanel mainPanel = new JPanel();
 		cardPanel.add(mainPanel, "Main");
 		
-		JPanel clientPanel = new JPanel();
-		cardPanel.add(clientPanel,"Client");
+		JPanel basicSyncPanel = new JPanel();
+		cardPanel.add(basicSyncPanel,"Basic");
 		
 		JPanel serverPanel = new JPanel();
 		cardPanel.add(serverPanel,"Server");
+		
+		JPanel clientPanel = new JPanel();
+		cardPanel.add(clientPanel,"Client");
+		clientPanel.setLayout(null);
+		
+		JButton serverBackButton_1 = new JButton("Back");
+		serverBackButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				myLayout.show(cardPanel,"Main");
+			}
+		});
+		serverBackButton_1.setBounds(10, 10, 85, 21);
+		clientPanel.add(serverBackButton_1);
+		
+		JButton clientSourceFolder = new JButton("Select source folder :");
+		clientSourceFolder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Select Source Folder");
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int result = fileChooser.showOpenDialog(frmeSynchronize);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					clientSourceTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+		clientSourceFolder.setBounds(10, 41, 196, 32);
+		clientPanel.add(clientSourceFolder);
+		
+		clientSourceTextField = new JTextField();
+		clientSourceTextField.setColumns(10);
+		clientSourceTextField.setBounds(216, 41, 242, 32);
+		clientPanel.add(clientSourceTextField);
+		
+		JLabel serverLabel_1 = new JLabel("Please enter a port :");
+		serverLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 19));
+		serverLabel_1.setBounds(10, 83, 215, 32);
+		clientPanel.add(serverLabel_1);
+		
+		clientPortTextField = new JTextField();
+		clientPortTextField.setColumns(10);
+		clientPortTextField.setBounds(216, 83, 169, 33);
+		clientPanel.add(clientPortTextField);
+		
+		JLabel clientStateLabel = new JLabel("State : ");
+		clientStateLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		clientStateLabel.setBounds(108, 128, 98, 32);
+		clientPanel.add(clientStateLabel);
+		
+		JLabel clientActualStateLabel = new JLabel("");
+		clientActualStateLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		clientActualStateLabel.setBounds(171, 125, 276, 35);
+		clientPanel.add(clientActualStateLabel);
+		
+		JButton clientConnectButton = new JButton("Connect");
+		clientConnectButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (clientPortTextField.getText().equals("")) {
+					clientActualStateLabel.setText("Please enter a port");
+				}
+				boolean isNumeric = clientPortTextField.getText().chars().allMatch( Character::isDigit );
+				if (!isNumeric) {
+					clientActualStateLabel.setText("Please enter a valid port");
+				}
+	        	int port = Integer.parseInt(clientPortTextField.getText());
+	        	Client client = new Client();
+	        	client.sourceFolder = clientSourceTextField.getText();
+	        	try {
+					client.startConnection("localhost",port);
+					clientActualStateLabel.setText("Connection established!");
+				} catch (IOException | InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		clientConnectButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		clientConnectButton.setBounds(170, 161, 150, 49);
+		clientPanel.add(clientConnectButton);
+		
 		serverPanel.setLayout(null);
 		
-		JLabel serverLabel = new JLabel("Please choose a port :");
+		JLabel serverLabel = new JLabel("Please enter a port :");
 		serverLabel.setFont(new Font("Tahoma", Font.PLAIN, 19));
-		serverLabel.setBounds(29, 44, 215, 32);
+		serverLabel.setBounds(10, 85, 215, 32);
 		serverPanel.add(serverLabel);
 		
-		serverTextField = new JTextField();
-		serverTextField.setBounds(254, 48, 169, 33);
-		serverPanel.add(serverTextField);
-		serverTextField.setColumns(10);
+		serverPortTextField = new JTextField();
+		serverPortTextField.setBounds(216, 89, 169, 33);
+		serverPanel.add(serverPortTextField);
+		serverPortTextField.setColumns(10);
 
 		JLabel serverStateLabel = new JLabel("State : ");
 		serverStateLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		serverStateLabel.setBounds(118, 103, 98, 32);
+		serverStateLabel.setBounds(112, 118, 98, 32);
 		serverPanel.add(serverStateLabel);
 		
 		JLabel serverActualStateLabel = new JLabel("");
 		serverActualStateLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		serverActualStateLabel.setBounds(189, 105, 276, 35);
+		serverActualStateLabel.setBounds(177, 115, 276, 35);
 		serverPanel.add(serverActualStateLabel);
+		
+		JButton serverLaunchButton = new JButton("Launch");
+		serverLaunchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					if (serverPortTextField.getText().equals("")) {
+						serverActualStateLabel.setText("Please enter a port");
+					}
+					boolean isNumeric = serverPortTextField.getText().chars().allMatch( Character::isDigit );
+					if (!isNumeric) {
+						clientActualStateLabel.setText("Please enter a valid port");
+					}
+		        	int port = Integer.parseInt(serverPortTextField.getText());
+		        	Server server = new Server();
+		        	server.destinationFolder = serverDestinationTextField.getText();
+		        	try {
+						server.startServer(port);
+						serverActualStateLabel.setText("Connection established!");
+					} catch (IOException | InterruptedException e1) {
+						e1.printStackTrace();
+					}
+			}
+		});
+		serverLaunchButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		serverLaunchButton.setBounds(166, 161, 150, 49);
+		serverPanel.add(serverLaunchButton);
 		
 		JButton serverBackButton = new JButton("Back");
 		serverBackButton.addActionListener(new ActionListener() {
@@ -109,7 +232,27 @@ public class Gui extends JFrame {
 		serverBackButton.setBounds(10, 13, 85, 21);
 		serverPanel.add(serverBackButton);
 		
-		myLayout.show(cardPanel, "Main");
+		JButton serverDestinationFolder = new JButton("Select destination folder :");
+		serverDestinationFolder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Select Destination Folder");
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int result = fileChooser.showOpenDialog(frmeSynchronize);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					serverDestinationTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+		serverDestinationFolder.setBounds(10, 43, 196, 32);
+		serverPanel.add(serverDestinationFolder);
+		
+		serverDestinationTextField = new JTextField();
+		serverDestinationTextField.setColumns(10);
+		serverDestinationTextField.setBounds(216, 44, 242, 32);
+		serverPanel.add(serverDestinationTextField);
+		
+		myLayout.show(cardPanel, "First");
 		
 		JButton clientButton = new JButton("Client");
 		clientButton.addActionListener(new ActionListener() {
@@ -137,64 +280,25 @@ public class Gui extends JFrame {
 		mainLabel.setForeground(new Color(0, 0, 0));
 		mainLabel.setBounds(54, 45, 366, 25);
 		mainPanel.add(mainLabel);
-		clientPanel.setLayout(null);
+		
+		JButton clientBackButton_1 = new JButton("Back");
+		clientBackButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				myLayout.show(cardPanel,"First");
+			}
+		});
+		clientBackButton_1.setBounds(10, 10, 85, 21);
+		mainPanel.add(clientBackButton_1);
+		basicSyncPanel.setLayout(null);
 			
 		JLabel stateLabel = new JLabel("");
 		stateLabel.setBounds(217, 138, 141, 14);
-		clientPanel.add(stateLabel);
+		basicSyncPanel.add(stateLabel);
 
 		JLabel errorLabel = new JLabel("");
 		errorLabel.setForeground(new Color(255, 0, 0));
 		errorLabel.setBounds(47, 162, 415, 14);
-		clientPanel.add(errorLabel);
-
-		JLabel clientIPLabel = new JLabel("IP Adress : ");
-		clientIPLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		clientIPLabel.setBounds(197, 107, 105, 29);
-		clientPanel.add(clientIPLabel);
-		
-		clientIPTextField = new JTextField();
-		clientIPTextField.setColumns(10);
-		clientIPTextField.setBounds(281, 114, 127, 20);
-		clientPanel.add(clientIPTextField);
-	
-		JButton serverLaunchButton = new JButton("Launch");
-		serverLaunchButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-		        try {
-					if (serverTextField.getText().equals("")) {
-						serverActualStateLabel.setText("Please enter a port");
-					}
-					if (serverTextField.getText() instanceof String) {
-						serverActualStateLabel.setText("Please enter a valid port");
-					}
-		        	int port = Integer.parseInt(serverTextField.getText());
-		            ServerSocket serverSocket = new ServerSocket(port); // create server socket
-		            Socket clientSocket = serverSocket.accept(); // wait for client to connect
-		            System.out.println("Connection established!"); // print message to console
-					serverActualStateLabel.setText("Connection established!");
-					DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-					String sourceFolderPath = dataInputStream.readUTF();
-					String destinationFolderPath = dataInputStream.readUTF();
-					File destDir = new File(destinationFolderPath);
-					if (!destDir.exists()) {
-						destDir.mkdirs();
-					}
-					File sourceDir = new File(sourceFolderPath);
-					copy(sourceDir, destDir,0,0);
-
-					DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-					dataOutputStream.writeUTF("Folder copied successfully!");
-
-		        }
-		        catch (IOException f) {
-		            System.out.println("Error: " + f);
-		        }
-			}
-		});
-		serverLaunchButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		serverLaunchButton.setBounds(166, 161, 150, 49);
-		serverPanel.add(serverLaunchButton);
+		basicSyncPanel.add(errorLabel);
 
 		JButton startButton = new JButton("Synchronize");
 		startButton.addActionListener(new ActionListener() {
@@ -203,25 +307,6 @@ public class Gui extends JFrame {
 				String destinationFolderPath = destinationTextField.getText();
 				File sourceDir = new File(sourceFolderPath);
 				File destDir = new File(destinationFolderPath);
-		        try {
-					FileInputStream fileInputStream = new FileInputStream(sourceFolderPath);
-		        	int port = Integer.parseInt(clientPortTextField.getText());
-					String IP = clientIPTextField.getText();
-		            Socket socket = new Socket(IP, port); // create client socket and connect to server
-		            System.out.println("Connection established!"); // print message to console
-					DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-					dataOutputStream.write(sourceFolderPath.getBytes());
-					dataOutputStream.write(destinationFolderPath.getBytes());
-					DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-					String response = dataInputStream.readUTF();
-
-					System.out.println(response);
-
-		        }
-		        catch (IOException f) {
-		            System.out.println("Error: " + f);
-		        }
-
 				if (sourceFolderPath.isEmpty() || destinationFolderPath.isEmpty()) {
 					errorLabel.setText("Error: Please fill both source and destination folders.");
 					return;
@@ -238,19 +323,20 @@ public class Gui extends JFrame {
 					return;
 				} else {
 					if (isActive) {
-						Sync.main(new String[] { sourceFolderPath, destinationFolderPath });
+				        Sync sync = new Sync(sourceFolderPath, destinationFolderPath);
+				        Thread thread = new Thread(sync);
+				        thread.start();
 						stateLabel.setText("Synchronized");
 						errorLabel.setText("");
 						startButton.setEnabled(false);
 					} else {
 						stateLabel.setText("Not Synchronized");
 					}
-
 				}
 			}
 		});
 		startButton.setBounds(47, 186, 160, 23);
-		clientPanel.add(startButton);
+		basicSyncPanel.add(startButton);
 
 		JButton stopButton = new JButton("Stop");
 		stopButton.addActionListener(new ActionListener() {
@@ -261,11 +347,11 @@ public class Gui extends JFrame {
 			}
 		});
 		stopButton.setBounds(289, 186, 160, 23);
-		clientPanel.add(stopButton);
+		basicSyncPanel.add(stopButton);
 
 		JLabel stateLabelInitial = new JLabel("State :");
 		stateLabelInitial.setBounds(156, 138, 75, 14);
-		clientPanel.add(stateLabelInitial);
+		basicSyncPanel.add(stateLabelInitial);
 
 		JButton sourceButton = new JButton("Select source folder :");
 		sourceButton.addActionListener(new ActionListener() {
@@ -280,7 +366,7 @@ public class Gui extends JFrame {
 			}
 		});
 		sourceButton.setBounds(5, 41, 192, 23);
-		clientPanel.add(sourceButton);
+		basicSyncPanel.add(sourceButton);
 
 		JButton destinationButton = new JButton("Select destination folder :");
 		destinationButton.addActionListener(new ActionListener() {
@@ -295,36 +381,26 @@ public class Gui extends JFrame {
 			}
 		});
 		destinationButton.setBounds(5, 74, 192, 23);
-		clientPanel.add(destinationButton);
+		basicSyncPanel.add(destinationButton);
 
 		sourceTextField = new JTextField();
 		sourceTextField.setBounds(207, 43, 242, 20);
-		clientPanel.add(sourceTextField);
+		basicSyncPanel.add(sourceTextField);
 		sourceTextField.setColumns(10);
 
 		destinationTextField = new JTextField();
 		destinationTextField.setBounds(208, 76, 241, 20);
-		clientPanel.add(destinationTextField);
+		basicSyncPanel.add(destinationTextField);
 		destinationTextField.setColumns(10);
-		
-		JLabel clientPortLabel = new JLabel("Port : ");
-		clientPortLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		clientPortLabel.setBounds(15, 107, 88, 29);
-		clientPanel.add(clientPortLabel);
-		
-		clientPortTextField = new JTextField();
-		clientPortTextField.setColumns(10);
-		clientPortTextField.setBounds(60, 114, 127, 20);
-		clientPanel.add(clientPortTextField);
 		
 		JButton clientBackButton = new JButton("Back");
 		clientBackButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				myLayout.show(cardPanel,"Main");
+				myLayout.show(cardPanel,"First");
 			}
 		});
 		clientBackButton.setBounds(10, 10, 85, 21);
-		clientPanel.add(clientBackButton);
+		basicSyncPanel.add(clientBackButton);
 		
 	}
 
@@ -333,30 +409,5 @@ public class Gui extends JFrame {
 		Gui window = new Gui();
 		window.frmeSynchronize.setVisible(true);
 		return window;
-	}
-	public void copy(File source, File destination, int i, int lvl) throws IOException {
-		File[] sourceDir = source.listFiles();
-		if (i == sourceDir.length) {
-			return;
-		}
-		if (sourceDir[i].isFile()) {
-			FileInputStream inputStream = new FileInputStream(sourceDir[i]);
-			FileOutputStream outputStream = new FileOutputStream(new File(destination.getPath() + "\\" + sourceDir[i].getName()));
-			byte[] buffer = new byte[1024];
-			int length;
-			while ((length = inputStream.read(buffer)) > 0) {
-				outputStream.write(buffer, 0, length);
-			}
-			inputStream.close();
-			outputStream.close();
-		}
-		if (sourceDir[i].isDirectory()) {
-			File newDir = new File(destination.getPath() + "\\" + sourceDir[i].getName());
-			if (!newDir.exists()) {
-				newDir.mkdir();
-			}
-			copy(sourceDir[i], newDir, 0, lvl+1);
-		}
-		copy(source,destination, i + 1, lvl);
 	}
 }
