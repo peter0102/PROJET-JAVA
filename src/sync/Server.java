@@ -61,6 +61,10 @@ public class Server {
         if (data.equals("end")) {
             delete(new File(destinationFolder));
             filesList = new ArrayList<>();
+            if (!firstWrite) {
+                firstWrite = true;
+                System.out.println("First write done in receiveFiles");
+            }
             return;
         }
         filesList.add(separatedData[1]);
@@ -83,10 +87,7 @@ public class Server {
                 }
             }
         }
-        if (!firstWrite) {
-            firstWrite = true;
-            System.out.println("First write done in receiveFiles");
-        }
+
 
     }
 
