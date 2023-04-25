@@ -11,7 +11,6 @@ public class Client {
     private BufferedReader in;
     String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
     private List<String> filesList = new ArrayList<>();
-    private boolean clientIsActive = true;
     private boolean firstSend = false;
 
     public void startConnection(String host, int port) throws IOException, InterruptedException {
@@ -40,7 +39,7 @@ public class Client {
             }
         });
         readThread.start();
-        while (clientIsActive) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
+        while (true) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
                                  // au serveur
             int newLenght = check(file);
             if (initialLenght != newLenght) {
@@ -67,7 +66,6 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        clientIsActive = false;
     }
 
     public void send(File file) { // serialisation des fichiers et envoi au serveur

@@ -12,7 +12,6 @@ public class Server {
     private BufferedReader in;
     String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
     private List<String> filesList = new ArrayList<>();
-    private boolean serverIsActive = true;
     private boolean firstWrite = false;
 
     public void startServer(Integer port) throws IOException, InterruptedException {
@@ -108,7 +107,6 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        serverIsActive = false;
     }
 
     public int check(File directory) {
