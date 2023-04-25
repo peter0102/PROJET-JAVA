@@ -10,8 +10,8 @@ public class Server {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
-    List<String> filesList = new ArrayList<>();
+    private String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
+    private List<String> filesList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Server server = new Server();
@@ -23,7 +23,7 @@ public class Server {
         clientSocket = serverSocket.accept();
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        Thread readThread = new Thread(new Runnable() {
+        Thread readThread = new Thread(new Runnable() { // sans nouveau thread, le programme bloque à while ((line = in.readLine()) et attends des données du client
             public void run() {
                 try {
                     String line;

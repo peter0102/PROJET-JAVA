@@ -6,11 +6,11 @@ import java.io.*;
 import java.nio.file.*;
 
 public class Client {
-    Socket socket;
-    PrintWriter out;
-    BufferedReader in;
-    String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
-    List<String> filesList = new ArrayList<>();
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
+    private List<String> filesList = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Client client = new Client();
@@ -25,9 +25,7 @@ public class Client {
         File file = new File(sourceFolder);
         int initialLenght = check(file);
         send(file);
-        
-        // Start a new thread to read data from the server
-        Thread readThread = new Thread(new Runnable() {
+        Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
             public void run() {
                 try {
                     String line;
@@ -40,8 +38,7 @@ public class Client {
             }
         });
         readThread.start();
-        
-        while (true) {
+        while (true) { //partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie au serveur
             int newLenght = check(file);
             if (initialLenght!=newLenght) {
                 send(file);
@@ -64,19 +61,19 @@ public class Client {
         for (File sourceFile : files) {
             String buffer = "";
             if (sourceFile.isDirectory()) {
-                buffer += "1||";
+                buffer += "1||"; // 1 pour les dossiers; || pour séparer les données
                 buffer += sourceFile.getPath().substring(this.sourceFolder.length());
                 out.println(buffer);
-                out.flush();
+                out.flush(); // pour bien tout envoyer au serveur
                 send(sourceFile);
             }
             if (sourceFile.isFile()) {
-                buffer += "0||";
-                buffer += sourceFile.getPath().substring(this.sourceFolder.length()) + "||";
+                buffer += "0||"; // 0 pour les fichiers
+                buffer += sourceFile.getPath().substring(this.sourceFolder.length()) + "||"; // on récupère le chemin relatif seulement pour les sous-dossiers
                 try {
                     byte[] bytes = Files.readAllBytes(sourceFile.toPath());
                     if (bytes == null) {
-                        buffer += "";
+                        buffer += ""; // si le fichier est vide, on envoie une chaîne vide
                     } else {
                         buffer += Base64.getEncoder().encodeToString(bytes);
                     }
@@ -121,7 +118,7 @@ public class Client {
         }
         else if (separatedData[0].equals("0")) { // 0||path||base64 pour les fichiers
             File file = new File(sourceFolder+File.separator+separatedData[1]);
-            if (separatedData.length==2){ // 0||path si le fichier est vide, on le crée sans écrire dedans
+            if (separatedData.length==2){ // 0||path|| si le fichier est vide, on le crée sans écrire dedans
                 file.createNewFile();
             }
             else {
