@@ -13,7 +13,7 @@ public class Server {
     String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
     private List<String> filesList = new ArrayList<>();
     private boolean serverIsActive = true;
-    boolean allFilesReceived;
+    private boolean firstWrite = false;
 
     public void startServer(Integer port) throws IOException, InterruptedException {
         System.out.println("Waiting for connection");
@@ -30,21 +30,21 @@ public class Server {
                     while ((data = in.readLine()) != null) {
                         receiveFiles(data);
                     }
+                    firstWrite = true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
         readThread.start();
-        File file = new File(destinationFolder);
-        int initialLenght = check(file);
-        send(file);
-        allFilesReceived = false;
-        while (serverIsActive) {
-            if (!allFilesReceived) {
-                Thread.sleep(1000);
-            }
-            if (allFilesReceived) {
+        if (!firstWrite) {
+            Thread.sleep(1000);
+        }
+        else {
+            File file = new File(destinationFolder);
+            int initialLenght = check(file);
+            send(file);
+            while (serverIsActive) {
                 int newLenght = check(file);
                 if (initialLenght != newLenght) {
                     send(file);
@@ -53,6 +53,7 @@ public class Server {
                 Thread.sleep(2000);
             }
         }
+
     }
 
     public void receiveFiles(String data) throws IOException {
@@ -82,7 +83,6 @@ public class Server {
                 }
             }
         }
-        allFilesReceived = true;
     }
 
     public void stopServer() throws IOException {

@@ -12,6 +12,7 @@ public class Client {
     String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
     private List<String> filesList = new ArrayList<>();
     private boolean clientIsActive = true;
+    private boolean firstSend = false;
 
     public void startConnection(String host, int port) throws IOException, InterruptedException {
         socket = new Socket(host, port);
@@ -21,29 +22,35 @@ public class Client {
         File file = new File(sourceFolder);
         int initialLenght = check(file);
         send(file);
-        Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
-            public void run() {
-                try {
-                    String data;
-                    while ((data = in.readLine()) != null) {
-                        receiveFiles(data);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        readThread.start();
-        while (clientIsActive) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
-                                 // au serveur
-            int newLenght = check(file);
-            if (initialLenght != newLenght) {
-                send(file);
-                initialLenght = newLenght;
-            }
-            Thread.sleep(2000);
+        if (!firstSend) {
+            Thread.sleep(1000);
         }
-    }
+        else {
+            Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
+                public void run() {
+                    try {
+                        String data;
+                        while ((data = in.readLine()) != null) {
+                            receiveFiles(data);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            readThread.start();
+            while (clientIsActive) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
+                                     // au serveur
+                int newLenght = check(file);
+                if (initialLenght != newLenght) {
+                    send(file);
+                    initialLenght = newLenght;
+                }
+                Thread.sleep(2000);
+            }
+        }
+        }
+
 
     public void stopConnection() throws IOException {
         try {
@@ -96,6 +103,7 @@ public class Client {
             out.println("end");
             out.flush();
         }
+        firstSend=true;
     }
 
     public int check(File directory) {
