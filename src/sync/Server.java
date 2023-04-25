@@ -30,7 +30,7 @@ public class Server {
                     while ((data = in.readLine()) != null) {
                         receiveFiles(data);
                     }
-                    firstWrite = true;
+                    //firstWrite = true; ??
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
