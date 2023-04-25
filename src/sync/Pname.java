@@ -1,4 +1,4 @@
-package com.mycompany.pname;
+package sync;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ public class Pname {
 
         try {
             // Créer une nouvelle socket et connecter au serveur
-            clientSocket = new Socket("adresse IP", "numéro de port");
+            clientSocket = new Socket("adresse IP", 8000);
 
             // Obtenir un flux de sortie vers le serveur
             outputStream = clientSocket.getOutputStream();

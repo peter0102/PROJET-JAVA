@@ -32,7 +32,7 @@ public class Server {
         }
 
     }
-    public void receiveFiles(String data) {
+    public void receiveFiles(String data) throws IOException {
         String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
             delete(new File(destinationFolder));
@@ -40,21 +40,26 @@ public class Server {
             return;
         }
         filesList.add(separatedData[1]);
-        if (separatedData[0].equals("1")) {
+        if (separatedData[0].equals("1")) { // 1||path pour les dossiers
             File folder = new File(destinationFolder+File.separator+separatedData[1]);
             if (!folder.exists()) {
                 folder.mkdir();
             }
         }
-        else if (separatedData[0].equals("0")) {
-            File file = new File(destinationFolder+File.separator+separatedData[1]); 
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
-                fileOutputStream.close();
+        else if (separatedData[0].equals("0")) { // 0||path||base64 pour les fichiers
+            File file = new File(destinationFolder+File.separator+separatedData[1]);
+            if (separatedData.length==2){ // 0||path si le fichier est vide, on le crée sans écrire dedans
+                file.createNewFile();
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            else {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
+                    fileOutputStream.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
