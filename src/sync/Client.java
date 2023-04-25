@@ -32,7 +32,6 @@ public class Client {
                 try {
                     String data;
                     while ((data = in.readLine()) != null) {
-                        System.out.println("Writing data");
                         receiveFiles(data);
                     }
                 } catch (IOException e) {
