@@ -32,6 +32,7 @@ public class Client {
                 try {
                     String data;
                     while ((data = in.readLine()) != null) {
+                        System.out.println("Writing data");
                         receiveFiles(data);
                     }
                 } catch (IOException e) {
@@ -47,6 +48,7 @@ public class Client {
                 System.out.println("Updating files");
                 send(file);
                 initialLenght = newLenght;
+                System.out.println("Files all sent");
             }
             Thread.sleep(2000);
         }
@@ -125,6 +127,7 @@ public class Client {
         if (data.equals("end")) {
             delete(new File(sourceFolder));
             filesList = new ArrayList<>();
+            System.out.println("Files all written");
             return;
         }
         filesList.add(separatedData[1]);

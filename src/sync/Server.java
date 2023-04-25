@@ -44,13 +44,13 @@ public class Server {
         System.out.println("First write done");
         File file = new File(destinationFolder);
         int initialLenght = check(file);
-        send(file);
-        while (serverIsActive) {
+        while (true) {
             int newLenght = check(file);
             if (initialLenght != newLenght) {
                 System.out.println("Updating files");
                 send(file);
                 initialLenght = newLenght;
+                System.out.println("Files all sent");
             }
             Thread.sleep(2000);
         }
