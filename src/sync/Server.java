@@ -4,8 +4,14 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
-
+/**
+ *  Class for server side of the synchronization, it contains for receiving data from the server and for sending data to the server.
+ * At first we want the server to receive data from the client only, but because we need the synchronization to work both ways, we also need to send data to the client.
+ */
 public class Server {
+    /*
+     * We use a PrintWriter to send data to the client, and a BufferedReader to receive data from the client, we declare the destinationFolder so we can use it and modify it in the methods, and we declare a list of files, to know which files to delete if needed
+     */
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private PrintWriter out;
@@ -13,7 +19,10 @@ public class Server {
     String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
     private List<String> filesList = new ArrayList<>();
     private boolean firstWrite = false;
-
+    /**
+     * This method starts the server so it can receive data from the client, and calls the methods for the synchronization. It contains a thread that receives data from client, and a thread that checks if files have been added or deleted, and sends data if needed
+     * @param port the port of the server
+     */
     public void startServer(Integer port) throws IOException, InterruptedException {
         System.out.println("Waiting for connection");
         serverSocket = new ServerSocket(port);
@@ -54,7 +63,10 @@ public class Server {
             Thread.sleep(2000);
         }
     }
-
+    /**
+     * This method contains the logic to receive data from the server. It deserializes the data and creates the files and folders. We deserialize the string using the separator "||", and we create the files and folders
+     * @param data the data to deserialize
+     */
     public void receiveFiles(String data) throws IOException {
         String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
@@ -89,7 +101,10 @@ public class Server {
 
 
     }
-
+    /**
+     * This method is used to stop the server, useful for the GUI
+     * @throws IOException
+     */
     public void stopServer() throws IOException {
         try {
             if (serverSocket != null) {
@@ -108,7 +123,11 @@ public class Server {
             e.printStackTrace();
         }
     }
-
+    /**
+     * This method is used to check the number of files and folders in the destination folder, it is used to know if files have been added or deleted
+     * @param directory the directory to check
+     * @return the number of files and folders in the directory
+     */
     public int check(File directory) {
         int lenght = 0;
         File[] files = directory.listFiles();
@@ -121,7 +140,10 @@ public class Server {
         }
         return lenght;
     }
-
+    /**
+     * This method is used to delete files and folders that are not in the list of files sent by the server
+     * @param file the file to delete
+     */
     public void delete(File file) {
         File[] allFiles = file.listFiles();
         for (File f : allFiles) {
@@ -138,7 +160,10 @@ public class Server {
             }
         }
     }
-
+    /**
+     * This method is used to delete a folder and all its content
+     * @param folder the folder to delete
+     */
     public void deleteFolder(File folder) {
         File[] allFiles = folder.listFiles();
         for (File f : allFiles) {
@@ -151,7 +176,10 @@ public class Server {
         }
         folder.delete();
     }
-
+    /**
+     * This method contains the logic to send data to the server. It serializes the files and sends them to the server, we turn the bytes of data into a base64 string, and send it to the server
+     * @param file the file to send to the server
+     */
     public void send(File file) {
         File[] files = file.listFiles();
         for (File sourceFile : files) {

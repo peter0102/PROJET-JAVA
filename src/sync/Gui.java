@@ -15,7 +15,9 @@ import javax.swing.JTextField;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
 import java.awt.Font;
-
+/**
+ * This class is the GUI for the program, it is used to select the folders to be synchronized
+ */
 public class Gui extends JFrame {
 	private boolean isActive = true;
 	private JFrame frmeSynchronize;
@@ -30,6 +32,7 @@ public class Gui extends JFrame {
 
 	/**
 	 * Launch the application.
+	 * This is where the main is, it creates a new Gui object and makes it visible
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -508,11 +511,5 @@ public class Gui extends JFrame {
 		clientBackButton.setBounds(10, 10, 85, 21);
 		basicSyncPanel.add(clientBackButton);
 
-	}
-
-	public static Gui createAndShowGui() {
-		Gui window = new Gui();
-		window.frmeSynchronize.setVisible(true);
-		return window;
 	}
 }

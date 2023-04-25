@@ -4,15 +4,25 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
-
+/**
+ * Class for client side of the synchronization, it contains the logic for sending data to the server, and for receiving data from the server.
+ * At first we want the client to send data to the server only, but because we need the synchronization to work both ways, we also need to receive data from the server.
+ */
 public class Client {
+    /*
+     * We use a PrintWriter to send data to the server, and a BufferedReader to receive data from the server, we declare the sourceFolder so we can use it and modify it in the methods, and we declare a list of files, to know which files to delete if needed
+     */
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
     private List<String> filesList = new ArrayList<>();
     private boolean firstSend = false;
-
+    /**
+     * This method starts the connection with the server, and calls the methods for the synchronization. It contains a thread that receives data from server, and a thread that checks if files have been added or deleted, and sends data if needed
+     * @param host the host of the server
+     * @param port the port of the server
+     */
     public void startConnection(String host, int port) throws IOException, InterruptedException {
         socket = new Socket(host, port);
         System.out.println("Connected");
@@ -51,7 +61,9 @@ public class Client {
             Thread.sleep(2000);
         }
     }
-
+    /**
+     * This method stops the connection with the server, and closes the streams, helpful for the GUI
+     */
     public void stopConnection() throws IOException {
         try {
             if (socket != null) {
@@ -67,7 +79,10 @@ public class Client {
             e.printStackTrace();
         }
     }
-
+    /**
+     * This method contains the logic to send data to the server. It serializes the files and sends them to the server, we turn the bytes of data into a base64 string, and send it to the server
+     * @param file the file to send to the server
+     */
     public void send(File file) { // serialisation des fichiers et envoi au serveur
         File[] files = file.listFiles();
         for (File sourceFile : files) {
@@ -104,7 +119,11 @@ public class Client {
         }
         firstSend = true;
     }
-
+ /**
+  * This method checks the number of files in a directory, and in its subdirectories, and returns the number of files, useful to know if synchronization is needed
+  * @param directory the directory to check
+  * @return
+  */
     public int check(File directory) {
         int lenght = 0;
         File[] files = directory.listFiles();
@@ -117,7 +136,10 @@ public class Client {
         }
         return lenght;
     }
-
+    /**
+     * This method contains the logic to receive data from the server. It deserializes the data and creates the files and folders. We deserialize the string using the separator "||", and we create the files and folders
+     * @param data the data to deserialize
+     */
     public void receiveFiles(String data) throws IOException { // désérialisation des fichiers et création des
                                                                // dossiers/fichierss
         String[] separatedData = data.split("\\|\\|");
@@ -148,7 +170,10 @@ public class Client {
             }
         }
     }
-
+    /**
+     * This method is used to delete files and folders that are not in the list of files sent by the server
+     * @param file the file to delete
+     */
     public void delete(File file) {
         File[] allFiles = file.listFiles();
         for (File f : allFiles) {
@@ -165,7 +190,10 @@ public class Client {
             }
         }
     }
-
+    /**
+     * This method is used to delete a folder and its content
+     * @param folder the folder to delete
+     */
     public void deleteFolder(File folder) {
         File[] allFiles = folder.listFiles();
         for (File f : allFiles) {
