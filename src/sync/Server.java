@@ -12,20 +12,17 @@ public class Server {
     private BufferedReader in;
     String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
     private List<String> filesList = new ArrayList<>();
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Server server = new Server();
-        server.startServer(8000);
-    }
+    private boolean serverIsActive = true;
 
     public void startServer(Integer port) throws IOException, InterruptedException {
-        System.out.println("Waiting for connecrion");
+        System.out.println("Waiting for connection");
         serverSocket = new ServerSocket(port);
         clientSocket = serverSocket.accept();
         System.out.println("Conneceted");
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        Thread readThread = new Thread(new Runnable() { // sans nouveau thread, le programme bloque à while ((line = in.readLine()) et attends des données du client
+        Thread readThread = new Thread(new Runnable() { // sans nouveau thread, le programme bloque à while ((line =
+                                                        // in.readLine()) et attends des données du client
             public void run() {
                 try {
                     String data;
@@ -41,7 +38,7 @@ public class Server {
         File file = new File(destinationFolder);
         int initialLenght = check(file);
         send(file);
-        while (true) {
+        while (serverIsActive) {
             int newLenght = check(file);
             if (initialLenght != newLenght) {
                 send(file);
@@ -50,56 +47,69 @@ public class Server {
             Thread.sleep(2000);
         }
     }
+
     public void receiveFiles(String data) throws IOException {
         String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
             delete(new File(destinationFolder));
-            filesList= new ArrayList<>();
+            filesList = new ArrayList<>();
             return;
         }
         filesList.add(separatedData[1]);
         if (separatedData[0].equals("1")) { // 1||path pour les dossiers
-            File folder = new File(destinationFolder+File.separator+separatedData[1]);
+            File folder = new File(destinationFolder + File.separator + separatedData[1]);
             if (!folder.exists()) {
                 folder.mkdir();
             }
-        }
-        else if (separatedData[0].equals("0")) { // 0||path||base64 pour les fichiers
-            File file = new File(destinationFolder+File.separator+separatedData[1]);
-            if (separatedData.length==2){ // 0||path si le fichier est vide, on le crée sans écrire dedans
+        } else if (separatedData[0].equals("0")) { // 0||path||base64 pour les fichiers
+            File file = new File(destinationFolder + File.separator + separatedData[1]);
+            if (separatedData.length == 2) { // 0||path si le fichier est vide, on le crée sans écrire dedans
                 file.createNewFile();
-            }
-            else {
+            } else {
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
                     fileOutputStream.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+
     public void stopServer() throws IOException {
-        in.close();
-        out.close();
-        clientSocket.close();
-        serverSocket.close();
+        try {
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
+            if (clientSocket != null) {
+                clientSocket.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        serverIsActive = false;
     }
+
     public int check(File directory) {
-        int lenght =0;
+        int lenght = 0;
         File[] files = directory.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                lenght+=check(file)+1;
-            }
-            else {
+                lenght += check(file) + 1;
+            } else {
                 lenght++;
             }
         }
         return lenght;
     }
+
     public void delete(File file) {
         File[] allFiles = file.listFiles();
         for (File f : allFiles) {
@@ -116,6 +126,7 @@ public class Server {
             }
         }
     }
+
     public void deleteFolder(File folder) {
         File[] allFiles = folder.listFiles();
         for (File f : allFiles) {
@@ -128,6 +139,7 @@ public class Server {
         }
         folder.delete();
     }
+
     public void send(File file) {
         File[] files = file.listFiles();
         for (File sourceFile : files) {
@@ -156,7 +168,8 @@ public class Server {
                 out.flush();
             }
         }
-        if ((file.getPath() + File.separator).equals(this.destinationFolder) || file.getPath().equals(this.destinationFolder)) {
+        if ((file.getPath() + File.separator).equals(this.destinationFolder)
+                || file.getPath().equals(this.destinationFolder)) {
             out.println("end");
             out.flush();
         }
