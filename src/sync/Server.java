@@ -83,7 +83,11 @@ public class Server {
                 }
             }
         }
-        firstWrite = true;
+        if (!firstWrite) {
+            firstWrite = true;
+            System.out.println("First write done in receiveFiles");
+        }
+
     }
 
     public void stopServer() throws IOException {
