@@ -184,14 +184,4 @@ public class Sync implements Runnable {
             }
         }
     }
-
-    public static void main(String[] args) {
-    	if (args.length!=2) {
-    		System.out.println("Error, 2 arguments are needed, source folder and destination foler");
-    		System.exit(1);
-    	}
-        Sync c = new Sync(args[0],args[1]);
-        Thread thread = new Thread(c);
-        thread.start();
-    }
 }
