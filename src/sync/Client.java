@@ -11,18 +11,21 @@ public class Client {
     BufferedReader in;
     String sourceFolder = "C:\\Users\\Peter\\Documents\\test";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Client client = new Client();
         client.startConnection("localhost", 8000);
         client.stopConnection();
     }
 
-    public void startConnection(String host, int port) throws IOException {
+    public void startConnection(String host, int port) throws IOException, InterruptedException {
         socket = new Socket(host, port);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         File file = new File(sourceFolder);
-        send(file);
+        while (true) {
+            send(file);
+            Thread.sleep(2000);
+        }
     }
 
     public void stopConnection() throws IOException {
@@ -60,9 +63,21 @@ public class Client {
             }
         }
         if ((file.getPath() + File.separator).equals(this.sourceFolder) || file.getPath().equals(this.sourceFolder)) {
-            System.out.println("End send");
             out.println("end");
             out.flush();
         }
+    }
+    public int check(File directory) {
+        int lenght =0;
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                lenght+=check(file)+1;
+            }
+            else {
+                lenght++;
+            }
+        }
+        return lenght;
     }
 }
