@@ -15,7 +15,6 @@ public class Server {
     public static void main(String[] args) throws IOException, InterruptedException {
         Server server = new Server();
         server.startServer(8000);
-        server.stopServer();
     }
 
     public void startServer(Integer port) throws IOException, InterruptedException {

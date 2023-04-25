@@ -22,8 +22,15 @@ public class Client {
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         File file = new File(sourceFolder);
+        int initialLenght = check(file);
+        send(file);
         while (true) {
-            send(file);
+            int newLenght = check(file);
+            if (initialLenght!=newLenght) {
+                send(file);
+                initialLenght=newLenght;
+                System.out.println("Files updated");
+            }
             Thread.sleep(2000);
         }
     }
@@ -80,4 +87,5 @@ public class Client {
         }
         return lenght;
     }
+    
 }
