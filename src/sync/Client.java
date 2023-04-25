@@ -22,38 +22,35 @@ public class Client {
         File file = new File(sourceFolder);
         int initialLenght = check(file);
         send(file);
-        if (!firstSend) {
+        while (!firstSend) {
             Thread.sleep(1000);
             System.out.println("First send not done");
         }
-        else {
-            System.out.println("First send done");
-            Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
-                public void run() {
-                    try {
-                        String data;
-                        while ((data = in.readLine()) != null) {
-                            receiveFiles(data);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        System.out.println("First send done");
+        Thread readThread = new Thread(new Runnable() { // thread qui reçoit les données du serveur
+            public void run() {
+                try {
+                    String data;
+                    while ((data = in.readLine()) != null) {
+                        receiveFiles(data);
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
-            readThread.start();
-            while (clientIsActive) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
-                                     // au serveur
-                int newLenght = check(file);
-                if (initialLenght != newLenght) {
-                    System.out.println("Updating files");
-                    send(file);
-                    initialLenght = newLenght;
-                }
-                Thread.sleep(2000);
             }
+        });
+        readThread.start();
+        while (clientIsActive) { // partie qui vérifie si des fichiers ont été ajoutés ou supprimés et les envoie
+                                 // au serveur
+            int newLenght = check(file);
+            if (initialLenght != newLenght) {
+                System.out.println("Updating files");
+                send(file);
+                initialLenght = newLenght;
+            }
+            Thread.sleep(2000);
         }
-        }
-
+    }
 
     public void stopConnection() throws IOException {
         try {
@@ -106,7 +103,7 @@ public class Client {
             out.println("end");
             out.flush();
         }
-        firstSend=true;
+        firstSend = true;
     }
 
     public int check(File directory) {

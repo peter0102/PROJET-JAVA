@@ -37,26 +37,23 @@ public class Server {
             }
         });
         readThread.start();
-        if (!firstWrite) {
+        while (!firstWrite) {
             Thread.sleep(1000);
             System.out.println("First write not done");
         }
-        else {
-            System.out.println("First write done");
-            File file = new File(destinationFolder);
-            int initialLenght = check(file);
-            send(file);
-            while (serverIsActive) {
-                int newLenght = check(file);
-                if (initialLenght != newLenght) {
-                    System.out.println("Updating files");
-                    send(file);
-                    initialLenght = newLenght;
-                }
-                Thread.sleep(2000);
+        System.out.println("First write done");
+        File file = new File(destinationFolder);
+        int initialLenght = check(file);
+        send(file);
+        while (serverIsActive) {
+            int newLenght = check(file);
+            if (initialLenght != newLenght) {
+                System.out.println("Updating files");
+                send(file);
+                initialLenght = newLenght;
             }
+            Thread.sleep(2000);
         }
-
     }
 
     public void receiveFiles(String data) throws IOException {
@@ -86,6 +83,7 @@ public class Server {
                 }
             }
         }
+        firstWrite = true;
     }
 
     public void stopServer() throws IOException {
