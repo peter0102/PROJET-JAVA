@@ -38,7 +38,6 @@ public class Server {
                     while ((data = in.readLine()) != null) {
                         receiveFiles(data);
                     }
-                    //firstWrite = true; ??
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -71,7 +70,7 @@ public class Server {
         String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
             delete(new File(destinationFolder));
-            filesList = new ArrayList<>();
+            filesList = new ArrayList<>(); // on met à jour la liste des fichiers
             if (!firstWrite) {
                 firstWrite = true;
                 System.out.println("First write done in receiveFiles");

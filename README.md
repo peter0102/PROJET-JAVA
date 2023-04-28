@@ -20,3 +20,4 @@ UML : erreurs à lister :
     -champs vides*
     -bouton désactivé*
     -exceptions faux chemin*
+bug : cloner dans un dossier non nul
