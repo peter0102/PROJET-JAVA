@@ -88,7 +88,9 @@ public class Server {
     /**
      * This method contains the logic to receive data from the server. It
      * deserializes the data and creates the files and folders. We deserialize the
-     * string using the separator "||", and we create the files and folders
+     * string using the separator "||", and we create the files and folders. We
+     * receive in order the type of the file (file or folder), the path of the file,
+     * and the content of the file if it's a file.
      * 
      * @param data the data to deserialize
      */
@@ -105,7 +107,7 @@ public class Server {
             }
             return;
         }
-        filesList.add(separatedData[1]);
+        filesList.add(separatedData[1]); // on le chemin du fichier (chemin + nom) à la liste des fichiers
         if (separatedData[0].equals("1")) { // 1||path pour les dossiers
             File folder = new File(destinationFolder + File.separator + separatedData[1]);
             if (!folder.exists()) {
