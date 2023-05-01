@@ -21,10 +21,11 @@ public class Server {
      */
     private ServerSocket serverSocket;
     private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private PrintWriter out; // output pour envoyer des données au clients sous forme de string
+    private BufferedReader in; // input pour lire les données envoyées par le client
     String destinationFolder = "C:\\Users\\Peter\\Documents\\test_copy";
-    private List<String> filesList = new ArrayList<>();
+    private List<String> filesList = new ArrayList<>(); // liste de fichiers qui s'actualise pour savoir quels fichiers
+                                                        // supprimer si besoin
     private boolean firstWrite = false;
     private boolean isRunning = true;
 
@@ -50,7 +51,7 @@ public class Server {
             public void run() {
                 try {
                     String data;
-                    while ((data = in.readLine()) != null) {
+                    while ((data = in.readLine()) != null) { // on lit les données envoyées par le client
                         receiveFiles(data);
                     }
                 } catch (IOException e) {
