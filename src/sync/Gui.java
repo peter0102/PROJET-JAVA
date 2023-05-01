@@ -333,6 +333,7 @@ public class Gui extends JFrame {
 		serverPanel.add(serverBackButton);
 
 		JButton serverDestinationFolder = new JButton("Select destination folder :");
+		serverDestinationFolder.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		serverDestinationFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
@@ -378,9 +379,9 @@ public class Gui extends JFrame {
 		mainPanel.add(serverButton);
 
 		JLabel mainLabel = new JLabel("Please choose between client and server.");
-		mainLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		mainLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mainLabel.setForeground(new Color(0, 0, 0));
-		mainLabel.setBounds(54, 45, 366, 25);
+		mainLabel.setBounds(54, 58, 445, 25);
 		mainPanel.add(mainLabel);
 
 		JButton mainBackButton = new JButton("Back");
@@ -512,4 +513,9 @@ public class Gui extends JFrame {
 		basicSyncPanel.add(clientBackButton);
 
 	}
+	// what extra functionnality can i implement for my syunc app
+	// 1- add a progress bar
+	// 2- add a log file
+	// 3- add a button to open the log file
+
 }
