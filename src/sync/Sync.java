@@ -43,14 +43,14 @@ public class Sync implements Runnable {
         if (sourceFolder[i].isFile()) {
             try {
                 Path sourcePath = Paths.get(sourceFolder[i].getPath());
-                Path destinationPath = Paths.get(destinationFolder.getPath() + "\\" + sourceFolder[i].getName());
+                Path destinationPath = Paths.get(destinationFolder.getPath() + File.separator + sourceFolder[i].getName());
                 Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         if (sourceFolder[i].isDirectory()) {
-            File newDir = new File(destinationFolder.getPath() + "\\" + sourceFolder[i].getName());
+            File newDir = new File(destinationFolder.getPath() + File.separator + sourceFolder[i].getName());
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
