@@ -170,7 +170,7 @@ public class Client {
      */
     public void receiveFiles(String data) throws IOException { // désérialisation des fichiers et création des
                                                                // dossiers/fichierss
-        String[] separatedData = data.split("\\| |");
+        String[] separatedData = data.split("\\|\\|");
         if (data.equals("end")) {
             delete(new File(sourceFolder));
             filesList = new ArrayList<>();
