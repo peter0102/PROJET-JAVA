@@ -69,6 +69,10 @@ public class Server {
             int initialLenght = check(file);
             while (true) {
                 int newLenght = check(file);
+                if (newLenght == -1) {
+                    System.out.println("Destination directory has been deleted, please restart");
+                    return;
+                }
                 if (initialLenght != newLenght) {
                     System.out.println("Updating files");
                     send(file);
@@ -159,6 +163,9 @@ public class Server {
     public int check(File directory) {
         int lenght = 0;
         File[] files = directory.listFiles();
+        if (files == null) {
+            return -1;
+        }
         for (File file : files) {
             if (file.isDirectory()) {
                 lenght += check(file) + 1;
