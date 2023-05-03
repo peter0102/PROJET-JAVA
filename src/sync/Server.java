@@ -42,8 +42,9 @@ public class Server {
         serverSocket = new ServerSocket(port);
         clientSocket = serverSocket.accept();
         System.out.println("Conneceted");
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(clientSocket.getOutputStream(), true); // envoi des données au client
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // lecture des données envoyées
+                                                                                       // par le client
         Thread readThread = new Thread(new Runnable() { // sans nouveau thread, le programme bloque à while ((line =
                                                         // in.readLine()) et attends des données du client, on crée un
                                                         // nouveau thread qui s'occupe de la réception et lecture des
@@ -108,6 +109,19 @@ public class Server {
             return;
         }
         filesList.add(separatedData[1]); // on le chemin du fichier (chemin + nom) à la liste des fichiers
+        File destinationFolder = new File(this.destinationFolder);
+        File logFile = new File(destinationFolder.getParent() + File.separator + "log.txt");
+        if (!logFile.exists()) {
+            logFile.createNewFile();
+        }
+        try (FileOutputStream outputStream = new FileOutputStream(logFile)) {
+            for (String file : filesList) {
+                String line = file + System.lineSeparator();
+                outputStream.write(line.getBytes());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (separatedData[0].equals("1")) { // 1||path pour les dossiers
             File folder = new File(destinationFolder + File.separator + separatedData[1]);
             if (!folder.exists()) {

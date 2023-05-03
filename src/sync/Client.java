@@ -223,7 +223,7 @@ public class Client {
                     f.delete();
                 }
             }
-            if (f.isDirectory()) {
+            if (f.isDirectory()) { //recursivité pour les sous-dossiers
                 delete(f);
             }
         }
