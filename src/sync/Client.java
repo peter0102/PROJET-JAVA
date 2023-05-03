@@ -184,7 +184,7 @@ public class Client {
             System.out.println("Files all written");
             return;
         }
-        filesList.add(separatedData[1]);
+        filesList.add(separatedData[1]); //on ajoute le fichier à la liste de fichiers, pour la synchronisation
         if (separatedData[0].equals("1")) { // 1||path pour les dossiers
             File folder = new File(sourceFolder + File.separator + separatedData[1]);
             if (!folder.exists()) {
@@ -197,7 +197,7 @@ public class Client {
             } else {
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
+                    fileOutputStream.write(Base64.getDecoder().decode(separatedData[2])); //on décode le string
                     fileOutputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
