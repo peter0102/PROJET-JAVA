@@ -109,19 +109,6 @@ public class Server {
             return;
         }
         filesList.add(separatedData[1]); // on le chemin du fichier (chemin + nom) à la liste des fichiers
-        File destinationFolder = new File(this.destinationFolder);
-        File logFile = new File(destinationFolder.getParent() + File.separator + "log.txt");
-        if (!logFile.exists()) {
-            logFile.createNewFile();
-        }
-        try (FileOutputStream outputStream = new FileOutputStream(logFile)) {
-            for (String file : filesList) {
-                String line = file + System.lineSeparator();
-                outputStream.write(line.getBytes());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         if (separatedData[0].equals("1")) { // 1||path pour les dossiers
             File folder = new File(destinationFolder + File.separator + separatedData[1]);
             if (!folder.exists()) {
