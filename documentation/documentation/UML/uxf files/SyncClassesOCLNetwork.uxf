@@ -1,9 +1,9 @@
-<diagram program="umletino" version="15.1"><zoom_level>11</zoom_level><help_text>Space for diagram notes</help_text><element><id>Relation</id><coordinates><x>517</x><y>88</y><w>88</w><h>341</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+<diagram program="umletino" version="15.1"><zoom_level>11</zoom_level><help_text>Space for diagram notes</help_text><element><id>Relation</id><coordinates><x>484</x><y>88</y><w>88</w><h>341</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m2=Client
-r2=1..1</panel_attributes><additional_attributes>10;10;10;280;60;280</additional_attributes></element><element><id>UMLClass</id><coordinates><x>352</x><y>0</y><w>286</w><h>99</h></coordinates><panel_attributes>Gui
+r2=1..1</panel_attributes><additional_attributes>10;10;10;280;60;280</additional_attributes></element><element><id>UMLClass</id><coordinates><x>319</x><y>0</y><w>286</w><h>99</h></coordinates><panel_attributes>Gui
 --
 --
-initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>44</x><y>297</y><w>363</w><h>297</h></coordinates><panel_attributes>Server
+initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>11</x><y>297</y><w>363</w><h>297</h></coordinates><panel_attributes>Server
 --
 serverSocket:ServerSocket
 clientSocket:Socket
@@ -21,7 +21,7 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopServer()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>583</x><y>297</y><w>363</w><h>264</h></coordinates><panel_attributes>Client
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>297</y><w>363</w><h>264</h></coordinates><panel_attributes>Client
 --
 socket:Socket
 out:PrintWriter
@@ -37,24 +37,24 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopConnection()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>396</x><y>88</y><w>88</w><h>341</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>363</x><y>88</y><w>88</w><h>341</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m2=Server
-r2=1..1</panel_attributes><additional_attributes>50;10;50;280;10;280</additional_attributes></element><element><id>UMLClass</id><coordinates><x>616</x><y>627</y><w>308</w><h>77</h></coordinates><panel_attributes>valign=center
+r2=1..1</panel_attributes><additional_attributes>50;10;50;280;10;280</additional_attributes></element><element><id>UMLClass</id><coordinates><x>583</x><y>627</y><w>308</w><h>77</h></coordinates><panel_attributes>valign=center
 halign=center
 OCL
 context client:Client 
 invariant port_correct:
-             (client.port&gt;0) and (client.port&lt;65535)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>209</x><y>627</y><w>308</w><h>77</h></coordinates><panel_attributes>valign=center
+             (client.port&gt;0) and (client.port&lt;65535)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>176</x><y>627</y><w>308</w><h>77</h></coordinates><panel_attributes>valign=center
 halign=center
 OCL
 context server.Server 
 invariant port_correct:
-             (server.port&gt;0) and (server.port&lt;65535)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>605</x><y>748</y><w>484</w><h>77</h></coordinates><panel_attributes>valign=center
+             (server.port&gt;0) and (server.port&lt;65535)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>572</x><y>748</y><w>484</w><h>77</h></coordinates><panel_attributes>valign=center
 halign=center
 OCL
 context client:Client 
 invariant valid_sourceFolder:
-             (client.sourceFolder:!null) and (client.sourceFolder.size()&gt;0) </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>33</x><y>748</y><w>484</w><h>77</h></coordinates><panel_attributes>valign=center
+             (client.sourceFolder:!null) and (client.sourceFolder.size()&gt;0) </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>748</y><w>484</w><h>77</h></coordinates><panel_attributes>valign=center
 halign=center
 OCL
 context server:Server
