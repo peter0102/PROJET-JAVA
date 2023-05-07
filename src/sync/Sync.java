@@ -45,7 +45,7 @@ public class Sync implements Runnable {
                 Path sourcePath = Paths.get(sourceFolder[i].getPath());
                 Path destinationPath = Paths.get(destinationFolder.getPath() + File.separator + sourceFolder[i].getName());
                 Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                File destFile = destinationPath.toFile();
+                File destFile = destinationPath.toFile(); // on change la date de modification du dossier destination pour que ça fonctionne sur linux
                 destFile.setLastModified(sourceFolder[i].lastModified());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,7 +56,7 @@ public class Sync implements Runnable {
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
-            newDir.setLastModified(sourceFolder[i].lastModified());
+            newDir.setLastModified(sourceFolder[i].lastModified()); // on change la date de modification du dossier destination pour que ça fonctionne sur linux
             copyFiles(sourceFolder[i].listFiles(), 0, lvl + 1, newDir);
         }
         copyFiles(sourceFolder, i + 1, lvl, destinationFolder);
