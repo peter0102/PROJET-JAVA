@@ -38,6 +38,7 @@ public class Sync implements Runnable {
      */
     public void copyFiles(File[] sourceFolder, int i, int lvl, File destinationFolder) throws FileNotFoundException {
         if (i == sourceFolder.length) {
+            destinationFolder.setLastModified(sourceFolder[0].getParentFile().lastModified());
             return;
         }
         if (sourceFolder[i].isFile()) {
