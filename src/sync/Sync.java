@@ -38,7 +38,6 @@ public class Sync implements Runnable {
      */
     public void copyFiles(File[] sourceFolder, int i, int lvl, File destinationFolder) throws FileNotFoundException {
         if (i == sourceFolder.length) {
-            destinationFolder.setLastModified(sourceFolder[0].getParentFile().lastModified());
             return;
         }
         if (sourceFolder[i].isFile()) {
@@ -46,6 +45,8 @@ public class Sync implements Runnable {
                 Path sourcePath = Paths.get(sourceFolder[i].getPath());
                 Path destinationPath = Paths.get(destinationFolder.getPath() + File.separator + sourceFolder[i].getName());
                 Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                File destFile = destinationPath.toFile();
+                destFile.setLastModified(sourceFolder[i].lastModified());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -55,10 +56,12 @@ public class Sync implements Runnable {
             if (!newDir.exists()) {
                 newDir.mkdir();
             }
+            newDir.setLastModified(sourceFolder[i].lastModified());
             copyFiles(sourceFolder[i].listFiles(), 0, lvl + 1, newDir);
         }
         copyFiles(sourceFolder, i + 1, lvl, destinationFolder);
     }
+    
 
     /**
      * This method is called to delete the files from the destination folder that
