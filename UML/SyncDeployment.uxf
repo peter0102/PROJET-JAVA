@@ -1,7 +1,9 @@
 <diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLDeployment</id><coordinates><x>250</x><y>80</y><w>310</w><h>340</h></coordinates><panel_attributes>_:Client_
 PC_client</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLDeployment</id><coordinates><x>600</x><y>80</y><w>330</w><h>340</h></coordinates><panel_attributes>_:Server_
 PC_Server</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>340</x><y>410</y><w>470</w><h>160</h></coordinates><panel_attributes>m1=Client port
+r1=localhost
 m2=Server port
+r2=localhost
 Local Sockets (TCP/IP)
 </panel_attributes><additional_attributes>10;10;10;130;390;130;390;10</additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>300</x><y>250</y><w>100</w><h>30</h></coordinates><panel_attributes>_:Client_</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>300</x><y>160</y><w>100</w><h>30</h></coordinates><panel_attributes>_:Gui_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>340</x><y>180</y><w>210</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-
 1.1: source = chooseSourceFile()

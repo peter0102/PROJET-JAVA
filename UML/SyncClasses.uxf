@@ -1,7 +1,7 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>700</x><y>310</y><w>260</w><h>90</h></coordinates><panel_attributes>Gui
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>840</x><y>310</y><w>260</w><h>90</h></coordinates><panel_attributes>Gui
 --
 --
-initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1070</x><y>310</y><w>330</w><h>150</h></coordinates><panel_attributes>Sync
+initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1210</x><y>310</y><w>330</w><h>150</h></coordinates><panel_attributes>Sync
 --
 sourceFolder : String
 destinationFolder : String
@@ -11,8 +11,16 @@ delete(source:File[], destination:File[])
 check(source:File, destination:File):int
 stopSync()
 run()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>580</y><w>330</w><h>150</h></coordinates><panel_attributes>Server
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>560</x><y>580</y><w>330</w><h>270</h></coordinates><panel_attributes>Server
 --
+serverSocket:ServerSocket
+clientSocket:Socket
+out:PrintWriter
+in:BufferedReader
+~destinationFolder:String
+fileList:List&lt;String&gt;
+firstWrite:boolean=false;
+isRunning:boolean=true;
 --
 startServer(port:int)
 receiveFiles(data:String)
@@ -21,8 +29,14 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopServer()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>910</x><y>580</y><w>330</w><h>150</h></coordinates><panel_attributes>Client
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1050</x><y>580</y><w>330</w><h>240</h></coordinates><panel_attributes>Client
 --
+socket:Socket
+out:PrintWriter
+in:BufferedReader
+~sourceFolder:String
+fileList:List&lt;String&gt;
+firstSend:boolean=false;
 --
 startConnection(host:String, port:int)
 receiveFiles(data:String)
@@ -31,23 +45,23 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopConnection()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>740</x><y>390</y><w>70</w><h>310</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=1..1</panel_attributes><additional_attributes>50;10;50;280;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>850</x><y>390</y><w>80</w><h>310</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=1..1</panel_attributes><additional_attributes>10;10;10;280;60;280</additional_attributes></element><element><id>Relation</id><coordinates><x>780</x><y>390</y><w>60</w><h>300</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Server</panel_attributes><additional_attributes>10;10;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>850</x><y>390</y><w>60</w><h>300</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Client</panel_attributes><additional_attributes>10;10;10;280;10;250</additional_attributes></element><element><id>Relation</id><coordinates><x>1100</x><y>150</y><w>110</w><h>180</h></coordinates><panel_attributes>lt=&lt;&lt;.
-&lt;&lt;implements&gt;&gt;</panel_attributes><additional_attributes>10;10;14;160</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1150</x><y>50</y><w>130</w><h>70</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>880</x><y>390</y><w>70</w><h>310</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1..1</panel_attributes><additional_attributes>50;10;50;280;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>990</x><y>390</y><w>80</w><h>310</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1..1</panel_attributes><additional_attributes>10;10;10;280;60;280</additional_attributes></element><element><id>Relation</id><coordinates><x>920</x><y>390</y><w>60</w><h>300</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Server</panel_attributes><additional_attributes>10;10;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>990</x><y>390</y><w>60</w><h>300</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Client</panel_attributes><additional_attributes>10;10;10;280;10;250</additional_attributes></element><element><id>Relation</id><coordinates><x>1240</x><y>150</y><w>110</w><h>180</h></coordinates><panel_attributes>lt=&lt;&lt;.
+&lt;&lt;implements&gt;&gt;</panel_attributes><additional_attributes>10;10;14;160</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1290</x><y>50</y><w>130</w><h>70</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
 Runnable
 --
 --
-run()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1410</x><y>50</y><w>130</w><h>90</h></coordinates><panel_attributes>Thread
+run()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1550</x><y>50</y><w>130</w><h>90</h></coordinates><panel_attributes>Thread
 --
 --
 run()
 start()
-sleep(long)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1270</x><y>80</y><w>160</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=body 0..1</panel_attributes><additional_attributes>140;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1080</x><y>0</y><w>530</w><h>160</h></coordinates><panel_attributes>java.lang</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>950</x><y>370</y><w>140</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Local 1..1</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1250</x><y>770</y><w>330</w><h>180</h></coordinates><panel_attributes>if (file.isDirectory())  { 
+sleep(long)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1410</x><y>80</y><w>160</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=body 0..1</panel_attributes><additional_attributes>140;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1220</x><y>0</y><w>530</w><h>160</h></coordinates><panel_attributes>java.lang</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1090</x><y>370</y><w>140</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Local 1..1</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1390</x><y>770</y><w>330</w><h>180</h></coordinates><panel_attributes>if (file.isDirectory())  { 
       buffer+="1||";
       send(file); //recursivity
 }
@@ -57,7 +71,7 @@ if (file.isFile()) {
      buffer += Base64.getEncoder().encodeToString(bytes);
      out.println(buffer);
      out.println("end");
-}</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>980</x><y>640</y><w>290</w><h>170</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>270;150;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1040</x><y>530</y><w>360</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>340;10;10;100</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1380</x><y>500</y><w>470</w><h>240</h></coordinates><panel_attributes>String[] separatedData = data.split("\\|\\|");
+}</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1120</x><y>640</y><w>290</w><h>170</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>270;150;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1180</x><y>530</y><w>360</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>340;10;10;100</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1520</x><y>500</y><w>470</w><h>240</h></coordinates><panel_attributes>String[] separatedData = data.split("\\|\\|");
 if (separatedData[0].equals("1")) {
      File folder = new File(destinationFolder + File.separator + 
      separatedData[1]);
@@ -71,12 +85,18 @@ else if (separatedData[0].equals("0")) {
 fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
 fileOutputStream.close();
 }
-else if (data.equals("end")) { return }</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1030</x><y>650</y><w>700</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>680;180;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1710</x><y>780</y><w>330</w><h>160</h></coordinates><panel_attributes>for (File file : directory.listFiles() ) {
+else if (data.equals("end")) { return }</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1170</x><y>650</y><w>700</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>680;180;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1850</x><y>780</y><w>330</w><h>140</h></coordinates><panel_attributes>for (File file : directory.listFiles() ) {
 					 if (file.isDirectory()) {
                 lenght += check(file) + 1;
        } else {
                 lenght++;
        }
   }
-return lenght;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1110</x><y>510</y><w>800</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>780;10;10;110</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1890</x><y>500</y><w>240</w><h>30</h></coordinates><panel_attributes>socket = new Socket(host, port);</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>250</x><y>550</y><w>200</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;10;180;70</additional_attributes></element><element><id>UMLNote</id><coordinates><x>0</x><y>520</y><w>260</w><h>50</h></coordinates><panel_attributes>serverSocket = new ServerSocket(port);
-clientSocket = serverSocket.accept();</panel_attributes><additional_attributes></additional_attributes></element></diagram>
+return lenght;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1250</x><y>510</y><w>800</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>780;10;10;110</additional_attributes></element><element><id>UMLNote</id><coordinates><x>2030</x><y>500</y><w>240</w><h>30</h></coordinates><panel_attributes>socket = new Socket(host, port);</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>390</x><y>550</y><w>200</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;10;180;70</additional_attributes></element><element><id>UMLNote</id><coordinates><x>140</x><y>520</y><w>260</w><h>50</h></coordinates><panel_attributes>serverSocket = new ServerSocket(port);
+clientSocket = serverSocket.accept();</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1470</x><y>310</y><w>200</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>180;10;10;70</additional_attributes></element><element><id>UMLNote</id><coordinates><x>1650</x><y>250</y><w>280</w><h>120</h></coordinates><panel_attributes>if (file.isFile()) {
+     Files.copy(source,destination)
+}
+else if (file.isDirectory) {
+     File dir = new File(dirPath)
+     dir.mkdir
+     copyFiles(source,0,lvl+1,dir) //recursivity</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>410</x><y>660</y><w>180</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;70;160;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>300</x><y>710</y><w>120</w><h>30</h></coordinates><panel_attributes>package private</panel_attributes><additional_attributes></additional_attributes></element></diagram>
