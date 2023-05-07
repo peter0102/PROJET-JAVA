@@ -1,34 +1,53 @@
-<diagram program="umletino" version="15.1"><zoom_level>7</zoom_level><help_text>Space for diagram notespo</help_text><element><id>UMLPackage</id><coordinates><x>42</x><y>224</y><w>553</w><h>357</h></coordinates><panel_attributes>Sync</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>245</y><w>231</w><h>126</h></coordinates><panel_attributes>Sync
+<diagram program="umletino" version="15.1"><zoom_level>7</zoom_level><help_text>Space for diagram notespo</help_text><element><id>UMLPackage</id><coordinates><x>84</x><y>175</y><w>553</w><h>385</h></coordinates><panel_attributes>Sync</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>539</x><y>42</y><w>371</w><h>112</h></coordinates><panel_attributes>java.lang</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>588</x><y>77</y><w>91</w><h>49</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+Runnable
+--
+--
+run()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>238</x><y>84</y><w>364</w><h>126</h></coordinates><panel_attributes>lt=&lt;&lt;.
+&lt;&lt;implements&gt;&gt;</panel_attributes><additional_attributes>500;20;10;20;14;160</additional_attributes></element><element><id>UMLClass</id><coordinates><x>399</x><y>203</y><w>182</w><h>154</h></coordinates><panel_attributes>Gui
+--
+isActive:boolean= true
+frmeSynchronize:JFrame
+sourceTextField:JTextField
+destinationTextField:JTextField
+serverPortTextField:JTextField
+serverDestinationTextField:JTextField
+clientSourceTextField:JTextField
+clientPortTextField:JTextField
+server:Server
+client:Client
+--
+initialize()
+createAndShowGui():Gui</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>770</x><y>77</y><w>91</w><h>63</h></coordinates><panel_attributes>Thread
+--
+--
+run()
+start()
+sleep(long)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>672</x><y>98</y><w>112</w><h>28</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=body 0..1</panel_attributes><additional_attributes>140;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>693</x><y>189</y><w>371</w><h>112</h></coordinates><panel_attributes>javax.swing</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>714</x><y>217</y><w>91</w><h>49</h></coordinates><panel_attributes>JFrame
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>574</x><y>231</y><w>147</w><h>28</h></coordinates><panel_attributes>lt=&lt;&lt;.
+&lt;&lt;uses&gt;&gt;</panel_attributes><additional_attributes>190;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>112</x><y>196</y><w>231</w><h>105</h></coordinates><panel_attributes>Sync
 --
 sourceFolder : String
 destinationFolder : String
+isActive:boolean
 --
 copyFiles(source:File[], i:int, lvl:int, destination:File)
 delete(source:File[], destination:File[])
 check(source:File, destination:File):int
 stopSync()
 run()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>497</x><y>91</y><w>371</w><h>112</h></coordinates><panel_attributes>java.lang</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>546</x><y>126</y><w>91</w><h>49</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
-Runnable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>112</x><y>322</y><w>231</w><h>189</h></coordinates><panel_attributes>Server
 --
---
-run()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>196</x><y>133</y><w>364</w><h>126</h></coordinates><panel_attributes>lt=&lt;&lt;.
-&lt;&lt;implements&gt;&gt;</panel_attributes><additional_attributes>500;20;10;20;14;160</additional_attributes></element><element><id>UMLClass</id><coordinates><x>357</x><y>252</y><w>182</w><h>119</h></coordinates><panel_attributes>Gui
---
---
-initialize()
-createAndShowGui():Gui</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>728</x><y>126</y><w>91</w><h>63</h></coordinates><panel_attributes>Thread
---
---
-run()
-start()
-sleep(long)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>630</x><y>147</y><w>112</w><h>28</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=body 0..1</panel_attributes><additional_attributes>140;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>651</x><y>238</y><w>371</w><h>112</h></coordinates><panel_attributes>javax.swing</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>672</x><y>266</y><w>91</w><h>49</h></coordinates><panel_attributes>JFrame
---
---
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>532</x><y>280</y><w>147</w><h>28</h></coordinates><panel_attributes>lt=&lt;&lt;.
-&lt;&lt;uses&gt;&gt;</panel_attributes><additional_attributes>190;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>406</y><w>231</w><h>126</h></coordinates><panel_attributes>Server
---
+serverSocket:ServerSocket
+clientSocket:Socket
+out:PrintWriter
+in:BufferedReader
+~destinationFolder:String
+fileList:List&lt;String&gt;
+firstWrite:boolean=false;
+isRunning:boolean=true;
 --
 startServer(port:int)
 receiveFiles(data:String)
@@ -37,8 +56,14 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopServer()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>406</y><w>231</w><h>126</h></coordinates><panel_attributes>Client
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>371</x><y>371</y><w>231</w><h>168</h></coordinates><panel_attributes>Client
 --
+socket:Socket
+out:PrintWriter
+in:BufferedReader
+~sourceFolder:String
+fileList:List&lt;String&gt;
+firstSend:boolean=false;
 --
 startConnection(host:String, port:int)
 receiveFiles(data:String)
