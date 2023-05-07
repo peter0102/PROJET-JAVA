@@ -1,30 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="15.0.0">
-  <help_text>Space for diagram notes</help_text>
-  <zoom_level>10</zoom_level>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>610</x>
-      <y>320</y>
-      <w>260</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>Gui
+<diagram program="umletino" version="15.1"><zoom_level>6</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>466</x><y>256</y><w>156</w><h>54</h></coordinates><panel_attributes>Gui
 --
 --
-initialize()</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>980</x>
-      <y>320</y>
-      <w>330</w>
-      <h>150</h>
-    </coordinates>
-    <panel_attributes>Sync
+initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>688</x><y>256</y><w>198</w><h>90</h></coordinates><panel_attributes>Sync
 --
 sourceFolder : String
 destinationFolder : String
@@ -35,18 +12,7 @@ delete(source:File[], destination:File[])
 check(source:File, destination:File):int
 stopSync()
 run()
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>330</x>
-      <y>590</y>
-      <w>330</w>
-      <h>270</h>
-    </coordinates>
-    <panel_attributes>Server
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>298</x><y>418</y><w>198</w><h>162</h></coordinates><panel_attributes>Server
 --
 serverSocket:ServerSocket
 clientSocket:Socket
@@ -64,18 +30,7 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopServer()
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>820</x>
-      <y>590</y>
-      <w>330</w>
-      <h>240</h>
-    </coordinates>
-    <panel_attributes>Client
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>592</x><y>418</y><w>198</w><h>144</h></coordinates><panel_attributes>Client
 --
 socket:Socket
 out:PrintWriter
@@ -91,144 +46,23 @@ check(directory:File):int
 delete(file:File)
 deleteFolder(file:File)
 stopConnection()
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>650</x>
-      <y>400</y>
-      <w>70</w>
-      <h>310</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=1..1</panel_attributes>
-    <additional_attributes>50.0;10.0;50.0;280.0;10.0;280.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>760</x>
-      <y>400</y>
-      <w>80</w>
-      <h>310</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=1..1</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;280.0;60.0;280.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>690</x>
-      <y>400</y>
-      <w>70</w>
-      <h>300</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Server</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;280.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>760</x>
-      <y>400</y>
-      <w>60</w>
-      <h>300</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Client</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;280.0;10.0;250.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1010</x>
-      <y>160</y>
-      <w>120</w>
-      <h>180</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;.
-&lt;&lt;implements&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;14.0;160.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>1060</x>
-      <y>60</y>
-      <w>130</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;interface&gt;&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>490</x><y>304</y><w>42</w><h>186</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1..1</panel_attributes><additional_attributes>50;10;50;280;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>556</x><y>304</y><w>48</w><h>186</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=1..1</panel_attributes><additional_attributes>10;10;10;280;60;280</additional_attributes></element><element><id>Relation</id><coordinates><x>514</x><y>304</y><w>36</w><h>180</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Server</panel_attributes><additional_attributes>10;10;10;280</additional_attributes></element><element><id>Relation</id><coordinates><x>556</x><y>304</y><w>36</w><h>180</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Client</panel_attributes><additional_attributes>10;10;10;280;10;250</additional_attributes></element><element><id>Relation</id><coordinates><x>706</x><y>160</y><w>66</w><h>108</h></coordinates><panel_attributes>lt=&lt;&lt;.
+&lt;&lt;implements&gt;&gt;</panel_attributes><additional_attributes>10;10;14;160</additional_attributes></element><element><id>UMLClass</id><coordinates><x>736</x><y>100</y><w>78</w><h>42</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
 Runnable
 --
 --
-run()</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>1320</x>
-      <y>60</y>
-      <w>130</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>Thread
+run()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>892</x><y>100</y><w>78</w><h>54</h></coordinates><panel_attributes>Thread
 --
 --
 run()
 start()
-sleep(long)</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1180</x>
-      <y>90</y>
-      <w>160</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=body 0..1</panel_attributes>
-    <additional_attributes>140.0;10.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLPackage</id>
-    <coordinates>
-      <x>990</x>
-      <y>10</y>
-      <w>530</w>
-      <h>160</h>
-    </coordinates>
-    <panel_attributes>java.lang</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>860</x>
-      <y>380</y>
-      <w>140</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
-m2=Local 1..1</panel_attributes>
-    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>890</x>
-      <y>860</y>
-      <w>330</w>
-      <h>180</h>
-    </coordinates>
-    <panel_attributes>if (file.isDirectory())  { 
+sleep(long)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>808</x><y>118</y><w>96</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=body 0..1</panel_attributes><additional_attributes>140;10;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>694</x><y>70</y><w>318</w><h>96</h></coordinates><panel_attributes>java.lang</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>616</x><y>292</y><w>84</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Local 1..1</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>634</x><y>580</y><w>198</w><h>108</h></coordinates><panel_attributes>if (file.isDirectory())  { 
       buffer+="1||";
       send(file); //recursivity
 }
@@ -238,40 +72,7 @@ if (file.isFile()) {
      buffer += Base64.getEncoder().encodeToString(bytes);
      out.println(buffer);
      out.println("end");
-}</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>880</x>
-      <y>740</y>
-      <w>190</w>
-      <h>160</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>170.0;140.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>930</x>
-      <y>650</y>
-      <w>300</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>280.0;10.0;10.0;80.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>1200</x>
-      <y>510</y>
-      <w>470</w>
-      <h>240</h>
-    </coordinates>
-    <panel_attributes>String[] separatedData = data.split("\\|\\|");
+}</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>628</x><y>508</y><w>114</w><h>96</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>170;140;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>658</x><y>454</y><w>180</w><h>60</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>280;10;10;80</additional_attributes></element><element><id>UMLNote</id><coordinates><x>820</x><y>370</y><w>282</w><h>144</h></coordinates><panel_attributes>String[] separatedData = data.split("\\|\\|");
 if (separatedData[0].equals("1")) {
      File folder = new File(destinationFolder + File.separator + 
      separatedData[1]);
@@ -285,131 +86,18 @@ else if (separatedData[0].equals("0")) {
 fileOutputStream.write(Base64.getDecoder().decode(separatedData[2]));
 fileOutputStream.close();
 }
-else if (data.equals("end")) { return }</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>920</x>
-      <y>750</y>
-      <w>370</w>
-      <h>120</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>350.0;100.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>1260</x>
-      <y>790</y>
-      <w>330</w>
-      <h>140</h>
-    </coordinates>
-    <panel_attributes>for (File file : directory.listFiles() ) {
+else if (data.equals("end")) { return }</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>652</x><y>514</y><w>222</w><h>72</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>350;100;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>856</x><y>538</y><w>198</w><h>84</h></coordinates><panel_attributes>for (File file : directory.listFiles() ) {
 					 if (file.isDirectory()) {
                 lenght += check(file) + 1;
        } else {
                 lenght++;
        }
   }
-return lenght;</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1020</x>
-      <y>470</y>
-      <w>390</w>
-      <h>270</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>370.0;10.0;10.0;250.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>1390</x>
-      <y>460</y>
-      <w>240</w>
-      <h>30</h>
-    </coordinates>
-    <panel_attributes>socket = new Socket(host, port);</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>240</x>
-      <y>740</y>
-      <w>130</w>
-      <h>130</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;110.0;110.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>0</x>
-      <y>810</y>
-      <w>260</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>serverSocket = new ServerSocket(port);
-clientSocket = serverSocket.accept();</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1230</x>
-      <y>330</y>
-      <w>220</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>200.0;10.0;10.0;70.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>1420</x>
-      <y>260</y>
-      <w>280</w>
-      <h>120</h>
-    </coordinates>
-    <panel_attributes>if (file.isFile()) {
+return lenght;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>712</x><y>346</y><w>234</w><h>162</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>370;10;10;250</additional_attributes></element><element><id>UMLNote</id><coordinates><x>934</x><y>340</y><w>144</w><h>18</h></coordinates><panel_attributes>socket = new Socket(host, port);</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>244</x><y>508</y><w>78</w><h>78</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;110;110;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>100</x><y>550</y><w>156</w><h>30</h></coordinates><panel_attributes>serverSocket = new ServerSocket(port);
+clientSocket = serverSocket.accept();</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>838</x><y>262</y><w>132</w><h>54</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>200;10;10;70</additional_attributes></element><element><id>UMLNote</id><coordinates><x>952</x><y>220</y><w>168</w><h>72</h></coordinates><panel_attributes>if (file.isFile()) {
      Files.copy(source,destination)
 }
 else if (file.isDirectory) {
      File dir = new File(dirPath)
      dir.mkdir
-     copyFiles(source,0,lvl+1,dir) //recursivity</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>170</x>
-      <y>670</y>
-      <w>190</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;70.0;170.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLNote</id>
-    <coordinates>
-      <x>70</x>
-      <y>720</y>
-      <w>120</w>
-      <h>30</h>
-    </coordinates>
-    <panel_attributes>package private</panel_attributes>
-    <additional_attributes/>
-  </element>
-</diagram>
+     copyFiles(source,0,lvl+1,dir) //recursivity</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>202</x><y>466</y><w>114</w><h>54</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;70;170;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>142</x><y>496</y><w>72</w><h>18</h></coordinates><panel_attributes>package private</panel_attributes><additional_attributes></additional_attributes></element></diagram>

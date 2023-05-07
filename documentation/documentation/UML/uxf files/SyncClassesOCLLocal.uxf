@@ -1,0 +1,22 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>140</x><y>220</y><w>260</w><h>90</h></coordinates><panel_attributes>Gui
+--
+--
+initialize()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>390</x><y>280</y><w>140</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=Local 1..1</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>220</y><w>330</w><h>150</h></coordinates><panel_attributes>Sync
+--
+sourceFolder : String
+destinationFolder : String
+isActive:boolean
+--
+copyFiles(source:File[], i:int, lvl:int, destination:File)
+delete(source:File[], destination:File[])
+check(source:File, destination:File):int
+stopSync()
+run()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>340</x><y>430</y><w>280</w><h>70</h></coordinates><panel_attributes>valign=center
+halign=center
+OCL
+context sync.Sync
+invariant valid_sourceFolder:
+(sync.sourceFolder!=sync.destinationFolder)
+</panel_attributes><additional_attributes></additional_attributes></element></diagram>
