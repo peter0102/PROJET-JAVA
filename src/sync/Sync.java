@@ -67,8 +67,8 @@ public class Sync implements Runnable {
      * This method is called to delete the files from the destination folder that
      * are not in the source folder
      * 
-     * @param a
-     * @param b
+     * @param a the source folder
+     * @param b the destination folder
      */
     public void delete(File[] a, File[] b) { // supprime dans b ce qu'il n'y a pas dans a
         if (a == null || b == null) {
