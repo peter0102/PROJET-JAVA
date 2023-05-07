@@ -513,9 +513,4 @@ public class Gui extends JFrame {
 		basicSyncPanel.add(clientBackButton);
 
 	}
-	// what extra functionnality can i implement for my syunc app
-	// 1- add a progress bar
-	// 2- add a log file
-	// 3- add a button to open the log file
-
 }

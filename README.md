@@ -20,9 +20,6 @@ UML : erreurs à lister :
     -champs vides*
     -bouton désactivé*
     -exceptions faux chemin*
-bug : cloner dans un dossier non nul ?
-bug : deconnecter client puis reconnecter, sans relancer le serveur
-test auto flush
 implémenter rename
 implémenter backup
 implémenter logfile
